@@ -1,0 +1,6 @@
+Consider some or statement, it can be written as (or pred1 pred2) where both pred1 and pred2 are/evaluate to booleans. To evaluate this or statement use the following path:
+	If pred1 is true, return true immediately and don't evaluate pred2.
+	If pred1 is false, evaluate and return pred2.
+Consider some and statement, it can be written as (and pred1 pred2) where both pred1 and pred2 are/evaluate to booleans. To evaluate this statement, use the following path:
+	If pred1 is false, return false immediately and don't evaluate pred2.
+	If pred1 is true, evaluate and return pred2.
