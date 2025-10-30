@@ -1,6 +1,6 @@
-open CS17SetupRackette;
+open CS17SetupRackettePREDESIGNCHECK;
 open Read.Reader;
-open Types;
+open TypesPREDESIGNCHECK;
 
 /* TODO: fill this with your initial top level environment,
  * consisting of built-in procedures like + or empty? */
@@ -57,11 +57,16 @@ let process: abstractProgram => list(value) =
       (tle, pieces) =>
         switch (pieces) {
         | [] => []
-        | [Definition(d), ...tl] => [] /* TODO: replace this with correct definition-
-                                          handling code and a recursive call to processHelper */
+        | [Definition(d), ...tl] =>
+          switch (d) {
+          | (myName, ex) =>
+            processHelper(addDefinition(tle, (myName, ex)), tl)
+          }
 
-        | [Expression(e), ...tl] => [] /* TODO: replace this with correct expression-
-                                          handling code and a recursive call to processHelper */
+        | [Expression(e), ...tl] => [
+            eval(initialTle, tle, e),
+            ...processHelper(tle, tl),
+          ]
         };
     processHelper(initialTle, pieces);
   };
