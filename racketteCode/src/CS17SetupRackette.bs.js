@@ -65,15 +65,8 @@ function stringOfExpression(expr) {
     case /* OrE */4 :
         return "OrE(" + (stringOfExpression(expr._0) + (", " + (stringOfExpression(expr._1) + ")")));
     case /* IfE */5 :
-        throw {
-              RE_EXN_ID: "Match_failure",
-              _1: [
-                "CS17SetupRackettePREDESIGNCHECK.re",
-                77,
-                4
-              ],
-              Error: new Error()
-            };
+        var ifRec = expr._0;
+        return "IfE({boolExpr: " + (stringOfExpression(ifRec.boolExpr) + (", trueExpr: " + (stringOfExpression(ifRec.trueExpr) + (", falseExpr: " + (stringOfExpression(ifRec.falseExpr) + ",})")))));
     case /* CondE */6 :
         var stringOfCondRecord = function (condD) {
           return "{conditionExpr: " + (stringOfExpression(condD.conditionExpr) + (", resultExpr: " + (stringOfExpression(condD.resultExpr) + ",}")));
@@ -85,11 +78,11 @@ function stringOfExpression(expr) {
     case /* LetE */8 :
         var letD = expr._0;
         var stringOfLetExpressionPair = function (pair) {
-          return "{pairName: " + (stringOfName(pair.pairName) + (", pairExpr: " + (stringOfExpression(pair.pairExpr) + "}")));
+          return "{pairName: " + (stringOfName(pair.pairName) + (", pairExpr: " + (stringOfExpression(pair.pairExpr) + ", }")));
         };
-        return "LetE({" + (stringOfAList(letD.letPairs, stringOfLetExpressionPair) + (", letBody: " + (stringOfExpression(letD.letBody) + ",})")));
+        return "LetE({letPairs: " + (stringOfAList(letD.letPairs, stringOfLetExpressionPair) + (", letBody: " + (stringOfExpression(letD.letBody) + ",})")));
     case /* ApplicationE */9 :
-        return "ApplicationE({" + (stringOfAList(expr._0, stringOfExpression) + "})");
+        return "ApplicationE(" + (stringOfAList(expr._0, stringOfExpression) + ")");
     
   }
 }

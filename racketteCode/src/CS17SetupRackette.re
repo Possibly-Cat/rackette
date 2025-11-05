@@ -1,4 +1,4 @@
-open TypesPREDESIGNCHECK;
+open Types;
 
 /* ======================== Printing helper procedures ====================== */
 
@@ -91,6 +91,18 @@ let rec stringOfExpression: expression => string =
       ++ ", "
       ++ stringOfExpression(expr2)
       ++ ")"
+    | IfE(ifRec) =>
+      "IfE({"
+      ++ "boolExpr: "
+      ++ stringOfExpression(ifRec.boolExpr)
+      ++ ", "
+      ++ "trueExpr: "
+      ++ stringOfExpression(ifRec.trueExpr)
+      ++ ", "
+      ++ "falseExpr: "
+      ++ stringOfExpression(ifRec.falseExpr)
+      ++ ","
+      ++ "})"
     | CondE((exprpairlist: list(condData))) =>
       let stringOfCondRecord: condData => string = (
         condD =>
@@ -122,9 +134,11 @@ let rec stringOfExpression: expression => string =
           ++ ", "
           ++ "pairExpr: "
           ++ stringOfExpression(pair.pairExpr)
+          ++ ", "
           ++ "}"
       );
       "LetE({"
+      ++ "letPairs: "
       ++ stringOfAList(letD.letPairs, stringOfLetExpressionPair)
       ++ ", "
       ++ "letBody: "
@@ -132,9 +146,9 @@ let rec stringOfExpression: expression => string =
       ++ ","
       ++ "})";
     | ApplicationE(expressionlist) =>
-      "ApplicationE({"
+      "ApplicationE("
       ++ stringOfAList(expressionlist, stringOfExpression)
-      ++ "})"
+      ++ ")"
     };
 
 /* --------------------------- stringOfDefinition ------------------------------

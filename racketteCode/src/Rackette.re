@@ -1,6 +1,6 @@
-open CS17SetupRackettePREDESIGNCHECK;
+open CS17SetupRackette;
 open Read.Reader;
-open TypesPREDESIGNCHECK;
+open Types;
 
 /* TODO: fill this with your initial top level environment,
  * consisting of built-in procedures like + or empty? */
@@ -70,7 +70,7 @@ let lessThanq: list(value) => value =
     switch (alov) {
     | [] => failwith("too few arguments for less than")
     | [NumV(_hd)] => failwith("too few arguments for less than")
-    | [NumV(hd), NumV(tl)] => BoolV(hd > tl)
+    | [NumV(hd), NumV(tl)] => BoolV(hd < tl)
     | [NumV(_e1), NumV(_e2), NumV(_e3), ..._tl] =>
       failwith("too many arguments for less than")
     | _lst => failwith("non-number arguments in less than")
@@ -105,7 +105,7 @@ let geqq: list(value) => value =
       failwith("too many arguments for >=")
     | _lst => failwith("non-number arguments in >=")
     };
-    let equalq: list(value) => value =
+let equalq: list(value) => value =
   alov =>
     switch (alov) {
     | [] => failwith("too few arguments for equal")
@@ -115,92 +115,88 @@ let geqq: list(value) => value =
     | [_val1, _val2, _val3, ..._tl] =>
       failwith("too many arguments for equal")
     | _lst => failwith("non-number arguments in equal")
-    };    
+    };
 let numberq: list(value) => value =
   alov =>
     switch (alov) {
     | [] => failwith("too few arguments for number?")
     | [NumV(_hd)] => BoolV(true)
     | [_val1] => BoolV(false)
-    | [_val1, _val2, ..._tl] =>
-      failwith("too many arguments for number?")
+    | [_val1, _val2, ..._tl] => failwith("too many arguments for number?")
     };
-    let zeroq: list(value) => value =
+let zeroq: list(value) => value =
   alov =>
     switch (alov) {
     | [] => failwith("too few arguments for zero?")
     | [NumV(hd)] => BoolV(hd == 0)
     | [_val1] => failwith("non-number argument for zero?")
-    | [_val1, _val2, ..._tl] =>
-      failwith("too many arguments for zero?")
+    | [_val1, _val2, ..._tl] => failwith("too many arguments for zero?")
     };
-    let cons: list(value) => value =
+let cons: list(value) => value =
   alov =>
     switch (alov) {
     | [] => failwith("too few arguments for cons")
     | [_val] => failwith("too few arguments for cons")
     | [myVal, ListV(myList)] => ListV([myVal, ...myList])
     | [_val1, _val2] => failwith("improper arguments for cons")
-    | [_val1, _val2, ..._tl] =>
-      failwith("too many arguments for cons")
+    | [_val1, _val2, ..._tl] => failwith("too many arguments for cons")
     };
-    let first: list(value) => value =
+let first: list(value) => value =
   alov =>
     switch (alov) {
     | [] => failwith("too few arguments for first")
-    | [ListV(myList)] => switch(myList){
-      |[] => failwith("Called first on empty list")
-      |[hd, ..._tl] => hd
-    }
+    | [ListV(myList)] =>
+      switch (myList) {
+      | [] => failwith("Called first on empty list")
+      | [hd, ..._tl] => hd
+      }
     | [_val1] => failwith("non list argument in first")
-    | [_val1, _val2, ..._tl] =>
-      failwith("too many arguments for first")
+    | [_val1, _val2, ..._tl] => failwith("too many arguments for first")
     };
-    let rest: list(value) => value =
+let rest: list(value) => value =
   alov =>
     switch (alov) {
     | [] => failwith("too few arguments for rest")
-    | [ListV(myList)] => switch(myList){
-      |[] => failwith("Called rest on empty list")
-      |[_hd] => ListV([])
-      |[_hd, ...tl] => ListV(tl)
-    }
+    | [ListV(myList)] =>
+      switch (myList) {
+      | [] => failwith("Called rest on empty list")
+      | [_hd] => ListV([])
+      | [_hd, ...tl] => ListV(tl)
+      }
     | [_val1] => failwith("non list argument in rest")
-    | [_val1, _val2, ..._tl] =>
-      failwith("too many arguments for rest")
+    | [_val1, _val2, ..._tl] => failwith("too many arguments for rest")
     };
-    let emptyq: list(value) => value =
+let emptyq: list(value) => value =
   alov =>
     switch (alov) {
     | [] => failwith("too few arguments for empty?")
-    | [ListV(myList)] => switch(myList){
-      |[] => BoolV(true)
-      |[hd, ..._tl] => BoolV(false)
-    }
+    | [ListV(myList)] =>
+      switch (myList) {
+      | [] => BoolV(true)
+      | [hd, ..._tl] => BoolV(false)
+      }
     | [_val1] => failwith("non list argument in empty?")
-    | [_val1, _val2, ..._tl] =>
-      failwith("too many arguments for empty?")
+    | [_val1, _val2, ..._tl] => failwith("too many arguments for empty?")
     };
-    let consq: list(value) => value =
+let consq: list(value) => value =
   alov =>
     switch (alov) {
     | [] => failwith("too few arguments for cons?")
-    | [ListV(myList)] => switch(myList){
-      |[] => BoolV(false)
-      |[hd, ..._tl] => BoolV(true)
-    }
+    | [ListV(myList)] =>
+      switch (myList) {
+      | [] => BoolV(false)
+      | [hd, ..._tl] => BoolV(true)
+      }
     | [_val1] => failwith("non list argument in cons?")
-    | [_val1, _val2, ..._tl] =>
-      failwith("too many arguments for cons?")
+    | [_val1, _val2, ..._tl] => failwith("too many arguments for cons?")
     };
-      let emptyq: list(value) => value =
+let not: list(value) => value =
   alov =>
     switch (alov) {
     | [] => failwith("too few arguments for not")
-    | [BoolV(myBool)] => !(myBool)
+    | [BoolV(myBool)] => BoolV(!myBool)
     | [_val1] => failwith("non bool argument in not")
-    | [_val1, _val2, ..._tl] =>
-      failwith("too many arguments for not")
+    | [_val1, _val2, ..._tl] => failwith("too many arguments for not")
     };
 let initialTle: environment = [
   [
@@ -217,13 +213,22 @@ let initialTle: environment = [
     (Name(">"), BuiltinV({printedRep: "builtin>", bProc: greaterThanq})),
     (Name("<="), BuiltinV({printedRep: "builtin<=", bProc: leqq})),
     (Name(">="), BuiltinV({printedRep: "builtin>=", bProc: geqq})),
-    (Name("equal?"), BuiltinV({printedRep: "builtinEqual?", bProc: equalq})),
-    (Name("number?"), BuiltinV({printedRep: "builtinNumber?", bProc: numberq})),
+    (
+      Name("equal?"),
+      BuiltinV({printedRep: "builtinEqual?", bProc: equalq}),
+    ),
+    (
+      Name("number?"),
+      BuiltinV({printedRep: "builtinNumber?", bProc: numberq}),
+    ),
     (Name("zero?"), BuiltinV({printedRep: "builtinZero?", bProc: zeroq})),
     (Name("cons"), BuiltinV({printedRep: "builtinCons", bProc: cons})),
     (Name("first"), BuiltinV({printedRep: "builtinFirst", bProc: first})),
     (Name("rest"), BuiltinV({printedRep: "builtinRest", bProc: rest})),
-    (Name("empty?"), BuiltinV({printedRep: "builtinEmpty?", bProc: emptyq})),
+    (
+      Name("empty?"),
+      BuiltinV({printedRep: "builtinEmpty?", bProc: emptyq}),
+    ),
     (Name("cons?"), BuiltinV({printedRep: "builtinCons?", bProc: consq})),
     (Name("not"), BuiltinV({printedRep: "builtinNot", bProc: not})),
   ],
@@ -287,7 +292,7 @@ let process: abstractProgram => list(value) =
           }
 
         | [Expression(e), ...tl] => [
-            eval(initialTle, tle, e),
+            eval(tle, [], e),
             ...processHelper(tle, tl),
           ]
         };
