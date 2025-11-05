@@ -829,7 +829,59 @@ function parseExpression(input) {
 }
 
 function parseDefinition(input) {
-  return Pervasives.failwith("parseDefinition is not yet implemented");
+  switch (input.TAG | 0) {
+    case /* NumberC */0 :
+    case /* SymbolC */1 :
+        break;
+    case /* ListC */2 :
+        var match = input._0;
+        if (match) {
+          var match$1 = match.hd;
+          switch (match$1.TAG | 0) {
+            case /* SymbolC */1 :
+                if (match$1._0 === "define") {
+                  var match$2 = match.tl;
+                  if (match$2) {
+                    var myName = match$2.hd;
+                    switch (myName.TAG | 0) {
+                      case /* SymbolC */1 :
+                          var match$3 = match$2.tl;
+                          if (match$3 && !match$3.tl) {
+                            return [
+                                    /* Name */{
+                                      _0: myName._0
+                                    },
+                                    Pervasives.failwith("parseExpression is not yet implemented")
+                                  ];
+                          }
+                          break;
+                      case /* NumberC */0 :
+                      case /* ListC */2 :
+                          break;
+                      
+                    }
+                  }
+                  
+                }
+                break;
+            case /* NumberC */0 :
+            case /* ListC */2 :
+                break;
+            
+          }
+        }
+        break;
+    
+  }
+  throw {
+        RE_EXN_ID: "Match_failure",
+        _1: [
+          "Rackette.re",
+          246,
+          4
+        ],
+        Error: new Error()
+      };
 }
 
 function parsePiece(input) {
@@ -867,12 +919,72 @@ function $$eval(tle, env, expr) {
   return Pervasives.failwith("eval is not yet implemented");
 }
 
-function addDefinition(env, param) {
-  return Pervasives.failwith("addDefinition is not yet implemented");
+function inBindingList(alob, myName) {
+  if (alob) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
-function stringOfValue(aValue) {
-  return Pervasives.failwith("stringOfValue is not yet implemented");
+function inEnviorment(_env, myName) {
+  while(true) {
+    var env = _env;
+    if (env) {
+      var bindingList1 = env.hd;
+      if (!bindingList1 && !env.tl) {
+        return false;
+      }
+      if (inBindingList(bindingList1, myName)) {
+        return true;
+      }
+      _env = env.tl;
+      continue ;
+    }
+    throw {
+          RE_EXN_ID: "Match_failure",
+          _1: [
+            "Rackette.re",
+            287,
+            4
+          ],
+          Error: new Error()
+        };
+  };
+}
+
+function addDefinition(env, param) {
+  var id = param[0];
+  if (inEnviorment(env, id)) {
+    return env;
+  }
+  if (env) {
+    return {
+            hd: {
+              hd: [
+                id,
+                List.hd($$process({
+                          hd: {
+                            TAG: /* Expression */1,
+                            _0: param[1]
+                          },
+                          tl: /* [] */0
+                        }))
+              ],
+              tl: env.hd
+            },
+            tl: env.tl
+          };
+  }
+  throw {
+        RE_EXN_ID: "Match_failure",
+        _1: [
+          "Rackette.re",
+          301,
+          11
+        ],
+        Error: new Error()
+      };
 }
 
 function $$process(pieces) {
@@ -900,6 +1012,10 @@ function $$process(pieces) {
     };
   };
   return processHelper(initialTle, pieces);
+}
+
+function stringOfValue(aValue) {
+  return Pervasives.failwith("stringOfValue is not yet implemented");
 }
 
 function rackette(program) {
@@ -935,8 +1051,10 @@ exports.parseDefinition = parseDefinition;
 exports.parsePiece = parsePiece;
 exports.parse = parse;
 exports.$$eval = $$eval;
+exports.inBindingList = inBindingList;
+exports.inEnviorment = inEnviorment;
 exports.addDefinition = addDefinition;
-exports.stringOfValue = stringOfValue;
 exports.$$process = $$process;
+exports.stringOfValue = stringOfValue;
 exports.rackette = rackette;
 /*  Not a pure module */

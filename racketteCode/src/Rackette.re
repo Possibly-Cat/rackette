@@ -236,13 +236,42 @@ let initialTle: environment = [
 
 /* TODO: write the header comment parts required by the Design Recipe
  * and implement parseExpression */
+let rec lstOfCondsToCondDatas: list(concreteProgramPiece) => list(condData) = condaDatas => switch(condDatas){
+  | [] => []
+  | [_conc1] => failwith("odd number of expressions withing a cond")
+  | [conc1, conc2, ...tl] => [{conditionExpr: conc1, resultExpr: conc2}, ...lstOfCondsToCondDatas(tl)]
+}
+let lambdaNamesToName: list(concreteProgramPieces) => lambdaData = lambdaNames =>
+  List.map((symb => switch(symb){
+    | SymbolC(myName) => Name(myName)
+  }), lambdaNames)
+  {nameList: List.tl(revLambdaStuff), lambdaBody: }
 let rec parseExpression: concreteProgramPiece => expression =
-  input => failwith("parseExpression is not yet implemented");
+  input => switch(input){
+    | NumberC(num) => NumE(num)
+    | SymbolC("true") => BoolE(true)
+    | SymbolC("false") => BoolE(false)
+    | SymbolC("empty") => EmptyE
+    | ListC([SymbolC("and"), conc1, conc2]) => AndE(parseExpression(conc1), parseExpression(conc2))
+    | ListC([SymbolC("or"), conc1, conc2]) => OrE(parseExpression(conc1), parseExpression(conc2))
+    | ListC([SymbolC("if"), conc1, conc2, conc3]) => IfE({boolExpr: conc1, trueExpr: conc2, falseExpr: conc3})
+    | ListC([SymbolC("cond"), ...condDatas]) => CondE(lstOfCondsToCondDatas(condDatas))
+    | ListC([SymbolC("lambda"), names, body]) =>LambdaE({nameList: lambdaNamesToName(names), lambdaBody: parseExpression(body)}) 
+    | ListC([SymbolC("let"), ...pairsAndBody]) =>
+    | ListC([SymbolC(someFunction), ...args]) =>
+  }
+
 
 /* TODO: write the header comment parts required by the Design Recipe
  * and implement parseDefinition */
 let parseDefinition: concreteProgramPiece => definition =
-  input => failwith("parseDefinition is not yet implemented");
+  input =>
+    switch (input) {
+    | ListC([SymbolC("define"), SymbolC(myName), boundValue]) => (
+        Name(myName),
+        parseExpression(boundValue),
+      )
+    };
 
 /* TODO: write the header comment parts required by the Design Recipe
  * and implement parsePiece */
@@ -269,17 +298,38 @@ let rec eval: (environment, environment, expression) => value =
     /* NOTE: tle is top level environment and env is local environment */
     failwith("eval is not yet implemented");
 
+let rec inBindingList: (bindingList, name) => bool =
+  (alob, myName) =>
+    switch (alob) {
+    | [] => false
+    | [(myName, _something), ..._tl] => true
+    | [(someName, _something), ...tl] => inBindingList(tl, myName)
+    };
+let rec inEnviorment: (environment, name) => bool =
+  (env, myName) =>
+    switch (env) {
+    | [[]] => false
+    | [bindingList1, ...tl] =>
+      if (inBindingList(bindingList1, myName)) {
+        true;
+      } else {
+        inEnviorment(tl, myName);
+      }
+    };
 /* TODO: write the header comment parts required by the Design Recipe */
-let addDefinition: (environment, (name, expression)) => environment =
-  (env, (id, expr)) => failwith("addDefinition is not yet implemented");
-
-/* TODO: write the header comment parts required by the Design Recipe
- * and implement stringOfValue*/
-let rec stringOfValue: value => string =
-  aValue => failwith("stringOfValue is not yet implemented");
-
-/* TODO: write the header comment parts required by the Design Recipe */
-let process: abstractProgram => list(value) =
+let rec addDefinition: (environment, (name, expression)) => environment =
+  (env, (id, expr)) =>
+    if (inEnviorment(env, id)) {
+      env;
+    } else {
+      switch (env) {
+      | [bindingList1, ...tl] => [
+          [(id, List.hd(process([Expression(expr)]))), ...bindingList1],
+          ...tl,
+        ]
+      }
+    }
+and process: abstractProgram => list(value) =
   pieces => {
     let rec processHelper: (environment, abstractProgram) => list(value) =
       (tle, pieces) =>
@@ -298,6 +348,12 @@ let process: abstractProgram => list(value) =
         };
     processHelper(initialTle, pieces);
   };
+/* TODO: write the header comment parts required by the Design Recipe
+ * and implement stringOfValue*/
+let rec stringOfValue: value => string =
+  aValue => failwith("stringOfValue is not yet implemented");
+
+/* TODO: write the header comment parts required by the Design Recipe */
 
 /* TODO: write the header comment parts required by the Design Recipe */
 let rackette: rawProgram => list(string) =
