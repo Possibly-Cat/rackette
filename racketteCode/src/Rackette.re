@@ -65,7 +65,7 @@ let equalityq: list(value) => value =
       failwith("too many arguments for equalityq")
     | _lst => failwith("non-number arguments in equalityq")
     };
-let lessThan: list(value) => value =
+let lessThanq: list(value) => value =
   alov =>
     switch (alov) {
     | [] => failwith("too few arguments for less than")
@@ -75,7 +75,7 @@ let lessThan: list(value) => value =
       failwith("too many arguments for less than")
     | _lst => failwith("non-number arguments in less than")
     };
-let greaterThan: list(value) => value =
+let greaterThanq: list(value) => value =
   alov =>
     switch (alov) {
     | [] => failwith("too few arguments for greater than")
@@ -85,7 +85,7 @@ let greaterThan: list(value) => value =
       failwith("too many arguments for greater than")
     | _lst => failwith("non-number arguments in greater than")
     };
-let leq: list(value) => value =
+let leqq: list(value) => value =
   alov =>
     switch (alov) {
     | [] => failwith("too few arguments for <=")
@@ -95,7 +95,7 @@ let leq: list(value) => value =
       failwith("too many arguments for <=")
     | _lst => failwith("non-number arguments in <=")
     };
-let geq: list(value) => value =
+let geqq: list(value) => value =
   alov =>
     switch (alov) {
     | [] => failwith("too few arguments for >=")
@@ -104,6 +104,103 @@ let geq: list(value) => value =
     | [NumV(_e1), NumV(_e2), NumV(_e3), ..._tl] =>
       failwith("too many arguments for >=")
     | _lst => failwith("non-number arguments in >=")
+    };
+    let equalq: list(value) => value =
+  alov =>
+    switch (alov) {
+    | [] => failwith("too few arguments for equal")
+    | [_val] => failwith("too few arguments for equal")
+    | [NumV(hd), NumV(tl)] => BoolV(hd == tl)
+    | [BoolV(hd), BoolV(tl)] => BoolV(hd == tl)
+    | [_val1, _val2, _val3, ..._tl] =>
+      failwith("too many arguments for equal")
+    | _lst => failwith("non-number arguments in equal")
+    };    
+let numberq: list(value) => value =
+  alov =>
+    switch (alov) {
+    | [] => failwith("too few arguments for number?")
+    | [NumV(_hd)] => BoolV(true)
+    | [_val1] => BoolV(false)
+    | [_val1, _val2, ..._tl] =>
+      failwith("too many arguments for number?")
+    };
+    let zeroq: list(value) => value =
+  alov =>
+    switch (alov) {
+    | [] => failwith("too few arguments for zero?")
+    | [NumV(hd)] => BoolV(hd == 0)
+    | [_val1] => failwith("non-number argument for zero?")
+    | [_val1, _val2, ..._tl] =>
+      failwith("too many arguments for zero?")
+    };
+    let cons: list(value) => value =
+  alov =>
+    switch (alov) {
+    | [] => failwith("too few arguments for cons")
+    | [_val] => failwith("too few arguments for cons")
+    | [myVal, ListV(myList)] => ListV([myVal, ...myList])
+    | [_val1, _val2] => failwith("improper arguments for cons")
+    | [_val1, _val2, ..._tl] =>
+      failwith("too many arguments for cons")
+    };
+    let first: list(value) => value =
+  alov =>
+    switch (alov) {
+    | [] => failwith("too few arguments for first")
+    | [ListV(myList)] => switch(myList){
+      |[] => failwith("Called first on empty list")
+      |[hd, ..._tl] => hd
+    }
+    | [_val1] => failwith("non list argument in first")
+    | [_val1, _val2, ..._tl] =>
+      failwith("too many arguments for first")
+    };
+    let rest: list(value) => value =
+  alov =>
+    switch (alov) {
+    | [] => failwith("too few arguments for rest")
+    | [ListV(myList)] => switch(myList){
+      |[] => failwith("Called rest on empty list")
+      |[_hd] => ListV([])
+      |[_hd, ...tl] => ListV(tl)
+    }
+    | [_val1] => failwith("non list argument in rest")
+    | [_val1, _val2, ..._tl] =>
+      failwith("too many arguments for rest")
+    };
+    let emptyq: list(value) => value =
+  alov =>
+    switch (alov) {
+    | [] => failwith("too few arguments for empty?")
+    | [ListV(myList)] => switch(myList){
+      |[] => BoolV(true)
+      |[hd, ..._tl] => BoolV(false)
+    }
+    | [_val1] => failwith("non list argument in empty?")
+    | [_val1, _val2, ..._tl] =>
+      failwith("too many arguments for empty?")
+    };
+    let consq: list(value) => value =
+  alov =>
+    switch (alov) {
+    | [] => failwith("too few arguments for cons?")
+    | [ListV(myList)] => switch(myList){
+      |[] => BoolV(false)
+      |[hd, ..._tl] => BoolV(true)
+    }
+    | [_val1] => failwith("non list argument in cons?")
+    | [_val1, _val2, ..._tl] =>
+      failwith("too many arguments for cons?")
+    };
+      let emptyq: list(value) => value =
+  alov =>
+    switch (alov) {
+    | [] => failwith("too few arguments for not")
+    | [BoolV(myBool)] => !(myBool)
+    | [_val1] => failwith("non bool argument in not")
+    | [_val1, _val2, ..._tl] =>
+      failwith("too many arguments for not")
     };
 let initialTle: environment = [
   [
@@ -116,19 +213,19 @@ let initialTle: environment = [
       BuiltinV({printedRep: "builtinRemainder", bProc: modulo}),
     ),
     (Name("="), BuiltinV({printedRep: "builtin=", bProc: equalityq})),
-    (Name("<"), BuiltinV({printedRep: "builtin<", bProc: lessThan})),
-    (Name(">"), BuiltinV({printedRep: "builtin>", bProc: greaterThan})),
-    (Name("<="), BuiltinV({printedRep: "builtin<=", bProc: leq})),
-    (Name(">="), BuiltinV({printedRep: "builtin>=", bProc: geq})),
-    // (Name("equal?"), BuiltinV({printedRep: "builtinEqual?", bProc: minus})),
-    // (Name("number?"), BuiltinV({printedRep: "builtinNumber?", bProc: minus})),
-    // (Name("zero?"), BuiltinV({printedRep: "builtinZero?", bProc: minus})),
-    // (Name("cons"), BuiltinV({printedRep: "builtinCons", bProc: minus})),
-    // (Name("first"), BuiltinV({printedRep: "builtinFirst", bProc: minus})),
-    // (Name("rest"), BuiltinV({printedRep: "builtinRest", bProc: minus})),
-    // (Name("empty?"), BuiltinV({printedRep: "builtinEmpty?", bProc: minus})),
-    // (Name("cons?"), BuiltinV({printedRep: "builtinCons?", bProc: minus})),
-    // (Name("not"), BuiltinV({printedRep: "builtinNot", bProc: minus})),
+    (Name("<"), BuiltinV({printedRep: "builtin<", bProc: lessThanq})),
+    (Name(">"), BuiltinV({printedRep: "builtin>", bProc: greaterThanq})),
+    (Name("<="), BuiltinV({printedRep: "builtin<=", bProc: leqq})),
+    (Name(">="), BuiltinV({printedRep: "builtin>=", bProc: geqq})),
+    (Name("equal?"), BuiltinV({printedRep: "builtinEqual?", bProc: equalq})),
+    (Name("number?"), BuiltinV({printedRep: "builtinNumber?", bProc: numberq})),
+    (Name("zero?"), BuiltinV({printedRep: "builtinZero?", bProc: zeroq})),
+    (Name("cons"), BuiltinV({printedRep: "builtinCons", bProc: cons})),
+    (Name("first"), BuiltinV({printedRep: "builtinFirst", bProc: first})),
+    (Name("rest"), BuiltinV({printedRep: "builtinRest", bProc: rest})),
+    (Name("empty?"), BuiltinV({printedRep: "builtinEmpty?", bProc: emptyq})),
+    (Name("cons?"), BuiltinV({printedRep: "builtinCons?", bProc: consq})),
+    (Name("not"), BuiltinV({printedRep: "builtinNot", bProc: not})),
   ],
 ];
 
