@@ -236,31 +236,39 @@ let initialTle: environment = [
 
 /* TODO: write the header comment parts required by the Design Recipe
  * and implement parseExpression */
-let rec lstOfCondsToCondDatas: list(concreteProgramPiece) => list(condData) = condaDatas => switch(condDatas){
-  | [] => []
-  | [_conc1] => failwith("odd number of expressions withing a cond")
-  | [conc1, conc2, ...tl] => [{conditionExpr: conc1, resultExpr: conc2}, ...lstOfCondsToCondDatas(tl)]
-}
-let lambdaNamesToName: list(concreteProgramPieces) => lambdaData = lambdaNames =>
+
+let lambdaNamesToName: list(concreteProgramPiece) => list(name) = lambdaNames =>
   List.map((symb => switch(symb){
     | SymbolC(myName) => Name(myName)
-  }), lambdaNames)
-  {nameList: List.tl(revLambdaStuff), lambdaBody: }
-let rec parseExpression: concreteProgramPiece => expression =
+  }), lambdaNames);
+
+
+
+  let rec lstOfCondsToCondDatas: list(concreteProgramPiece) => list(condData) = condDatas => 
+  List.map((condEntry => switch(condEntry){
+    |ListC([condition, result]) => {conditionExpr: parseExpression(condition), resultExpr: parseExpression(result)}
+  }), condDatas)
+and processLetNames: list(concreteProgramPiece) => list(letPair) = myLetPairs =>
+  List.map((pair => switch(pair){
+    | ListC([SymbolC(myName), myVal]) => {pairName: Name(myName), pairExpr: parseExpression(myVal)}
+  }), myLetPairs)
+and parseExpression: concreteProgramPiece => expression =
   input => switch(input){
     | NumberC(num) => NumE(num)
     | SymbolC("true") => BoolE(true)
     | SymbolC("false") => BoolE(false)
     | SymbolC("empty") => EmptyE
+    | SymbolC(someVar) =>
     | ListC([SymbolC("and"), conc1, conc2]) => AndE(parseExpression(conc1), parseExpression(conc2))
     | ListC([SymbolC("or"), conc1, conc2]) => OrE(parseExpression(conc1), parseExpression(conc2))
-    | ListC([SymbolC("if"), conc1, conc2, conc3]) => IfE({boolExpr: conc1, trueExpr: conc2, falseExpr: conc3})
-    | ListC([SymbolC("cond"), ...condDatas]) => CondE(lstOfCondsToCondDatas(condDatas))
-    | ListC([SymbolC("lambda"), names, body]) =>LambdaE({nameList: lambdaNamesToName(names), lambdaBody: parseExpression(body)}) 
-    | ListC([SymbolC("let"), ...pairsAndBody]) =>
-    | ListC([SymbolC(someFunction), ...args]) =>
+    | ListC([SymbolC("if"), conc1, conc2, conc3]) => IfE({boolExpr: parseExpression(conc1), trueExpr: parseExpression(conc2), falseExpr: parseExpression(conc3)})
+    | ListC([SymbolC("cond"), ListC(condDatas)]) => CondE(lstOfCondsToCondDatas(condDatas))
+    | ListC([SymbolC("lambda"), ListC(names), body]) => LambdaE({nameList: lambdaNamesToName(names), lambdaBody: parseExpression(body)}) 
+    | ListC([SymbolC("let"), ListC(myLetPairs), body]) =>LetE({letPairs: processLetNames(myLetPairs), letBody: parseExpression(body)})
+    | ListC([SymbolC(someFunction), ...args]) => ApplicationE(args))
   }
 
+let rec searchEnviorenment: 
 
 /* TODO: write the header comment parts required by the Design Recipe
  * and implement parseDefinition */

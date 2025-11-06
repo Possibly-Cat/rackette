@@ -824,8 +824,156 @@ var initialTle = {
   tl: /* [] */0
 };
 
+function lambdaNamesToName(lambdaNames) {
+  return List.map((function (symb) {
+                switch (symb.TAG | 0) {
+                  case /* SymbolC */1 :
+                      return /* Name */{
+                              _0: symb._0
+                            };
+                  case /* NumberC */0 :
+                  case /* ListC */2 :
+                      throw {
+                            RE_EXN_ID: "Match_failure",
+                            _1: [
+                              "Rackette.re",
+                              241,
+                              20
+                            ],
+                            Error: new Error()
+                          };
+                  
+                }
+              }), lambdaNames);
+}
+
 function parseExpression(input) {
-  return Pervasives.failwith("parseExpression is not yet implemented");
+  switch (input.TAG | 0) {
+    case /* NumberC */0 :
+        return {
+                TAG: /* NumE */0,
+                _0: input._0
+              };
+    case /* SymbolC */1 :
+        switch (input._0) {
+          case "empty" :
+              return /* EmptyE */0;
+          case "false" :
+              return {
+                      TAG: /* BoolE */1,
+                      _0: false
+                    };
+          case "true" :
+              return {
+                      TAG: /* BoolE */1,
+                      _0: true
+                    };
+          default:
+            
+        }
+        break;
+    case /* ListC */2 :
+        var match = input._0;
+        if (match) {
+          var match$1 = match.hd;
+          switch (match$1.TAG | 0) {
+            case /* SymbolC */1 :
+                switch (match$1._0) {
+                  case "and" :
+                      var match$2 = match.tl;
+                      if (match$2) {
+                        var match$3 = match$2.tl;
+                        if (match$3 && !match$3.tl) {
+                          return {
+                                  TAG: /* AndE */3,
+                                  _0: parseExpression(match$2.hd),
+                                  _1: parseExpression(match$3.hd)
+                                };
+                        }
+                        
+                      }
+                      break;
+                  case "if" :
+                      var match$4 = match.tl;
+                      if (match$4) {
+                        var match$5 = match$4.tl;
+                        if (match$5) {
+                          var match$6 = match$5.tl;
+                          if (match$6 && !match$6.tl) {
+                            return {
+                                    TAG: /* IfE */5,
+                                    _0: {
+                                      boolExpr: parseExpression(match$4.hd),
+                                      trueExpr: parseExpression(match$5.hd),
+                                      falseExpr: parseExpression(match$6.hd)
+                                    }
+                                  };
+                          }
+                          
+                        }
+                        
+                      }
+                      break;
+                  case "or" :
+                      var match$7 = match.tl;
+                      if (match$7) {
+                        var match$8 = match$7.tl;
+                        if (match$8 && !match$8.tl) {
+                          return {
+                                  TAG: /* OrE */4,
+                                  _0: parseExpression(match$7.hd),
+                                  _1: parseExpression(match$8.hd)
+                                };
+                        }
+                        
+                      }
+                      break;
+                  default:
+                    
+                }
+                break;
+            case /* NumberC */0 :
+            case /* ListC */2 :
+                break;
+            
+          }
+        }
+        break;
+    
+  }
+  throw {
+        RE_EXN_ID: "Match_failure",
+        _1: [
+          "Rackette.re",
+          251,
+          11
+        ],
+        Error: new Error()
+      };
+}
+
+function lstOfCondsToCondDatas(condDatas) {
+  return List.map((function (condEntry) {
+                if (condEntry) {
+                  var match = condEntry.tl;
+                  if (match && !match.tl) {
+                    return {
+                            conditionExpr: parseExpression(condEntry.hd),
+                            resultExpr: parseExpression(match.hd)
+                          };
+                  }
+                  
+                }
+                throw {
+                      RE_EXN_ID: "Match_failure",
+                      _1: [
+                        "Rackette.re",
+                        247,
+                        25
+                      ],
+                      Error: new Error()
+                    };
+              }), condDatas);
 }
 
 function parseDefinition(input) {
@@ -851,7 +999,7 @@ function parseDefinition(input) {
                                     /* Name */{
                                       _0: myName._0
                                     },
-                                    Pervasives.failwith("parseExpression is not yet implemented")
+                                    parseExpression(match$3.hd)
                                   ];
                           }
                           break;
@@ -877,7 +1025,7 @@ function parseDefinition(input) {
         RE_EXN_ID: "Match_failure",
         _1: [
           "Rackette.re",
-          246,
+          270,
           4
         ],
         Error: new Error()
@@ -945,7 +1093,7 @@ function inEnviorment(_env, myName) {
           RE_EXN_ID: "Match_failure",
           _1: [
             "Rackette.re",
-            287,
+            311,
             4
           ],
           Error: new Error()
@@ -980,7 +1128,7 @@ function addDefinition(env, param) {
         RE_EXN_ID: "Match_failure",
         _1: [
           "Rackette.re",
-          301,
+          325,
           11
         ],
         Error: new Error()
@@ -1022,9 +1170,12 @@ function rackette(program) {
   return List.map(stringOfValue, $$process(List.map(parsePiece, Read$Rackette.Reader.readAll(program))));
 }
 
-CS17SetupRackette$Rackette.checkExpectExpression(Pervasives.failwith("parseExpression is not yet implemented"), /* EmptyE */0, "parse empty expression");
+CS17SetupRackette$Rackette.checkExpectExpression(parseExpression({
+          TAG: /* SymbolC */1,
+          _0: "empty"
+        }), /* EmptyE */0, "parse empty expression");
 
-CS17SetupRackette$Rackette.checkExpectExpression((Read$Rackette.Reader.read("empty"), Pervasives.failwith("parseExpression is not yet implemented")), /* EmptyE */0, "read and parse empty expression");
+CS17SetupRackette$Rackette.checkExpectExpression(parseExpression(Read$Rackette.Reader.read("empty")), /* EmptyE */0, "read and parse empty expression");
 
 exports.add = add;
 exports.subtract = subtract;
@@ -1046,6 +1197,8 @@ exports.emptyq = emptyq;
 exports.consq = consq;
 exports.not_ = not_;
 exports.initialTle = initialTle;
+exports.lambdaNamesToName = lambdaNamesToName;
+exports.lstOfCondsToCondDatas = lstOfCondsToCondDatas;
 exports.parseExpression = parseExpression;
 exports.parseDefinition = parseDefinition;
 exports.parsePiece = parsePiece;
