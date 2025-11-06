@@ -1156,23 +1156,38 @@ function parsePiece(input) {
   switch (input.TAG | 0) {
     case /* NumberC */0 :
     case /* SymbolC */1 :
-        return Pervasives.failwith("expressions not yet parsed");
+        return {
+                TAG: /* Expression */1,
+                _0: parseExpression(input)
+              };
     case /* ListC */2 :
         var match = input._0;
         if (!match) {
-          return Pervasives.failwith("expressions not yet parsed");
+          return {
+                  TAG: /* Expression */1,
+                  _0: parseExpression(input)
+                };
         }
         var match$1 = match.hd;
         switch (match$1.TAG | 0) {
           case /* SymbolC */1 :
               if (match$1._0 === "define") {
-                return Pervasives.failwith("definitions not yet parsed");
+                return {
+                        TAG: /* Definition */0,
+                        _0: parseDefinition(input)
+                      };
               } else {
-                return Pervasives.failwith("expressions not yet parsed");
+                return {
+                        TAG: /* Expression */1,
+                        _0: parseExpression(input)
+                      };
               }
           case /* NumberC */0 :
           case /* ListC */2 :
-              return Pervasives.failwith("expressions not yet parsed");
+              return {
+                      TAG: /* Expression */1,
+                      _0: parseExpression(input)
+                    };
           
         }
     
@@ -1183,8 +1198,94 @@ function parse(input) {
   return List.map(parsePiece, input);
 }
 
-function $$eval(tle, env, expr) {
-  return Pervasives.failwith("eval is not yet implemented");
+function handleCond(tle, env, _myCondDatas) {
+  while(true) {
+    var myCondDatas = _myCondDatas;
+    if (!myCondDatas) {
+      return Pervasives.failwith("no conditions evaluated to true in a cond statement");
+    }
+    var match = myCondDatas.hd;
+    var match$1 = $$eval(tle, env, match.conditionExpr);
+    if (match$1.TAG !== /* BoolV */1) {
+      return Pervasives.failwith("non-bool as condition in a cond statement");
+    }
+    if (match$1._0) {
+      return match.resultExpr;
+    }
+    _myCondDatas = myCondDatas.tl;
+    continue ;
+  };
+}
+
+function $$eval(tle, env, _expr) {
+  while(true) {
+    var expr = _expr;
+    if (typeof expr === "number") {
+      return {
+              TAG: /* ListV */2,
+              _0: /* [] */0
+            };
+    }
+    switch (expr.TAG | 0) {
+      case /* NumE */0 :
+          return {
+                  TAG: /* NumV */0,
+                  _0: expr._0
+                };
+      case /* BoolE */1 :
+          return {
+                  TAG: /* BoolV */1,
+                  _0: expr._0
+                };
+      case /* AndE */3 :
+          var match = $$eval(tle, env, expr._0);
+          var match$1 = $$eval(tle, env, expr._1);
+          if (match.TAG === /* BoolV */1 && match$1.TAG === /* BoolV */1) {
+            return {
+                    TAG: /* BoolV */1,
+                    _0: match._0 && match$1._0
+                  };
+          } else {
+            return Pervasives.failwith("non booleans in an and statement");
+          }
+      case /* OrE */4 :
+          var match$2 = $$eval(tle, env, expr._0);
+          var match$3 = $$eval(tle, env, expr._1);
+          if (match$2.TAG === /* BoolV */1 && match$3.TAG === /* BoolV */1) {
+            return {
+                    TAG: /* BoolV */1,
+                    _0: match$2._0 || match$3._0
+                  };
+          } else {
+            return Pervasives.failwith("non booleans in an or statement");
+          }
+      case /* IfE */5 :
+          var match$4 = expr._0;
+          var match$5 = $$eval(tle, env, match$4.boolExpr);
+          if (match$5.TAG !== /* BoolV */1) {
+            return Pervasives.failwith("non booleans as first argument in an if statement");
+          }
+          if (match$5._0) {
+            _expr = match$4.trueExpr;
+            continue ;
+          }
+          _expr = match$4.falseExpr;
+          continue ;
+      case /* CondE */6 :
+          _expr = handleCond(tle, env, expr._0);
+          continue ;
+      default:
+        throw {
+              RE_EXN_ID: "Match_failure",
+              _1: [
+                "Rackette.re",
+                348,
+                22
+              ],
+              Error: new Error()
+            };
+    }
+  };
 }
 
 function inBindingList(alob, myName) {
@@ -1213,7 +1314,7 @@ function inEnviorment(_env, myName) {
           RE_EXN_ID: "Match_failure",
           _1: [
             "Rackette.re",
-            354,
+            379,
             4
           ],
           Error: new Error()
@@ -1248,7 +1349,7 @@ function addDefinition(env, param) {
         RE_EXN_ID: "Match_failure",
         _1: [
           "Rackette.re",
-          368,
+          393,
           11
         ],
         Error: new Error()
@@ -1266,7 +1367,7 @@ function $$process(pieces) {
       var d = pieces.hd;
       if (d.TAG !== /* Definition */0) {
         return {
-                hd: Pervasives.failwith("eval is not yet implemented"),
+                hd: $$eval(tle, /* [] */0, d._0),
                 tl: processHelper(tle, pieces.tl)
               };
       }
@@ -1324,6 +1425,7 @@ exports.parseExpression = parseExpression;
 exports.parseDefinition = parseDefinition;
 exports.parsePiece = parsePiece;
 exports.parse = parse;
+exports.handleCond = handleCond;
 exports.$$eval = $$eval;
 exports.inBindingList = inBindingList;
 exports.inEnviorment = inEnviorment;
