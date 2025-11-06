@@ -837,14 +837,90 @@ function lambdaNamesToName(lambdaNames) {
                             RE_EXN_ID: "Match_failure",
                             _1: [
                               "Rackette.re",
-                              241,
-                              20
+                              244,
+                              8
                             ],
                             Error: new Error()
                           };
                   
                 }
               }), lambdaNames);
+}
+
+function lstOfCondsToCondDatas(condDatas) {
+  return List.map((function (condEntry) {
+                switch (condEntry.TAG | 0) {
+                  case /* NumberC */0 :
+                  case /* SymbolC */1 :
+                      break;
+                  case /* ListC */2 :
+                      var match = condEntry._0;
+                      if (match) {
+                        var match$1 = match.tl;
+                        if (match$1 && !match$1.tl) {
+                          return {
+                                  conditionExpr: parseExpression(match.hd),
+                                  resultExpr: parseExpression(match$1.hd)
+                                };
+                        }
+                        
+                      }
+                      break;
+                  
+                }
+                throw {
+                      RE_EXN_ID: "Match_failure",
+                      _1: [
+                        "Rackette.re",
+                        254,
+                        8
+                      ],
+                      Error: new Error()
+                    };
+              }), condDatas);
+}
+
+function processLetNames(myLetPairs) {
+  return List.map((function (pair) {
+                switch (pair.TAG | 0) {
+                  case /* NumberC */0 :
+                  case /* SymbolC */1 :
+                      break;
+                  case /* ListC */2 :
+                      var match = pair._0;
+                      if (match) {
+                        var myName = match.hd;
+                        switch (myName.TAG | 0) {
+                          case /* SymbolC */1 :
+                              var match$1 = match.tl;
+                              if (match$1 && !match$1.tl) {
+                                return {
+                                        pairName: /* Name */{
+                                          _0: myName._0
+                                        },
+                                        pairExpr: parseExpression(match$1.hd)
+                                      };
+                              }
+                              break;
+                          case /* NumberC */0 :
+                          case /* ListC */2 :
+                              break;
+                          
+                        }
+                      }
+                      break;
+                  
+                }
+                throw {
+                      RE_EXN_ID: "Match_failure",
+                      _1: [
+                        "Rackette.re",
+                        266,
+                        8
+                      ],
+                      Error: new Error()
+                    };
+              }), myLetPairs);
 }
 
 function parseExpression(input) {
@@ -855,7 +931,8 @@ function parseExpression(input) {
                 _0: input._0
               };
     case /* SymbolC */1 :
-        switch (input._0) {
+        var someVar = input._0;
+        switch (someVar) {
           case "empty" :
               return /* EmptyE */0;
           case "false" :
@@ -869,111 +946,154 @@ function parseExpression(input) {
                       _0: true
                     };
           default:
-            
+            return {
+                    TAG: /* NameE */2,
+                    _0: /* Name */{
+                      _0: someVar
+                    }
+                  };
         }
-        break;
     case /* ListC */2 :
         var match = input._0;
-        if (match) {
-          var match$1 = match.hd;
-          switch (match$1.TAG | 0) {
-            case /* SymbolC */1 :
-                switch (match$1._0) {
-                  case "and" :
-                      var match$2 = match.tl;
-                      if (match$2) {
-                        var match$3 = match$2.tl;
-                        if (match$3 && !match$3.tl) {
+        if (!match) {
+          return Pervasives.failwith("Syntax error");
+        }
+        var someFunction = match.hd;
+        switch (someFunction.TAG | 0) {
+          case /* SymbolC */1 :
+              switch (someFunction._0) {
+                case "and" :
+                    var match$1 = match.tl;
+                    if (match$1) {
+                      var match$2 = match$1.tl;
+                      if (match$2 && !match$2.tl) {
+                        return {
+                                TAG: /* AndE */3,
+                                _0: parseExpression(match$1.hd),
+                                _1: parseExpression(match$2.hd)
+                              };
+                      }
+                      
+                    }
+                    break;
+                case "cond" :
+                    var match$3 = match.tl;
+                    if (match$3) {
+                      var condDatas = match$3.hd;
+                      switch (condDatas.TAG | 0) {
+                        case /* NumberC */0 :
+                        case /* SymbolC */1 :
+                            break;
+                        case /* ListC */2 :
+                            if (!match$3.tl) {
+                              return {
+                                      TAG: /* CondE */6,
+                                      _0: lstOfCondsToCondDatas(condDatas._0)
+                                    };
+                            }
+                            break;
+                        
+                      }
+                    }
+                    break;
+                case "if" :
+                    var match$4 = match.tl;
+                    if (match$4) {
+                      var match$5 = match$4.tl;
+                      if (match$5) {
+                        var match$6 = match$5.tl;
+                        if (match$6 && !match$6.tl) {
                           return {
-                                  TAG: /* AndE */3,
-                                  _0: parseExpression(match$2.hd),
-                                  _1: parseExpression(match$3.hd)
+                                  TAG: /* IfE */5,
+                                  _0: {
+                                    boolExpr: parseExpression(match$4.hd),
+                                    trueExpr: parseExpression(match$5.hd),
+                                    falseExpr: parseExpression(match$6.hd)
+                                  }
                                 };
                         }
                         
                       }
-                      break;
-                  case "if" :
-                      var match$4 = match.tl;
-                      if (match$4) {
-                        var match$5 = match$4.tl;
-                        if (match$5) {
-                          var match$6 = match$5.tl;
-                          if (match$6 && !match$6.tl) {
-                            return {
-                                    TAG: /* IfE */5,
-                                    _0: {
-                                      boolExpr: parseExpression(match$4.hd),
-                                      trueExpr: parseExpression(match$5.hd),
-                                      falseExpr: parseExpression(match$6.hd)
-                                    }
-                                  };
-                          }
-                          
-                        }
+                      
+                    }
+                    break;
+                case "lambda" :
+                    var match$7 = match.tl;
+                    if (match$7) {
+                      var names = match$7.hd;
+                      switch (names.TAG | 0) {
+                        case /* NumberC */0 :
+                        case /* SymbolC */1 :
+                            break;
+                        case /* ListC */2 :
+                            var match$8 = match$7.tl;
+                            if (match$8 && !match$8.tl) {
+                              return {
+                                      TAG: /* LambdaE */7,
+                                      _0: {
+                                        nameList: lambdaNamesToName(names._0),
+                                        lambdaBody: parseExpression(match$8.hd)
+                                      }
+                                    };
+                            }
+                            break;
                         
                       }
-                      break;
-                  case "or" :
-                      var match$7 = match.tl;
-                      if (match$7) {
-                        var match$8 = match$7.tl;
-                        if (match$8 && !match$8.tl) {
-                          return {
-                                  TAG: /* OrE */4,
-                                  _0: parseExpression(match$7.hd),
-                                  _1: parseExpression(match$8.hd)
-                                };
-                        }
+                    }
+                    break;
+                case "let" :
+                    var match$9 = match.tl;
+                    if (match$9) {
+                      var myLetPairs = match$9.hd;
+                      switch (myLetPairs.TAG | 0) {
+                        case /* NumberC */0 :
+                        case /* SymbolC */1 :
+                            break;
+                        case /* ListC */2 :
+                            var match$10 = match$9.tl;
+                            if (match$10 && !match$10.tl) {
+                              return {
+                                      TAG: /* LetE */8,
+                                      _0: {
+                                        letPairs: processLetNames(myLetPairs._0),
+                                        letBody: parseExpression(match$10.hd)
+                                      }
+                                    };
+                            }
+                            break;
                         
                       }
-                      break;
-                  default:
-                    
-                }
-                break;
-            case /* NumberC */0 :
-            case /* ListC */2 :
-                break;
-            
-          }
+                    }
+                    break;
+                case "or" :
+                    var match$11 = match.tl;
+                    if (match$11) {
+                      var match$12 = match$11.tl;
+                      if (match$12 && !match$12.tl) {
+                        return {
+                                TAG: /* OrE */4,
+                                _0: parseExpression(match$11.hd),
+                                _1: parseExpression(match$12.hd)
+                              };
+                      }
+                      
+                    }
+                    break;
+                default:
+                  
+              }
+              return {
+                      TAG: /* ApplicationE */9,
+                      _0: List.map(parseExpression, match.tl)
+                    };
+          case /* NumberC */0 :
+          case /* ListC */2 :
+              return Pervasives.failwith("Syntax error");
+          
         }
         break;
     
   }
-  throw {
-        RE_EXN_ID: "Match_failure",
-        _1: [
-          "Rackette.re",
-          251,
-          11
-        ],
-        Error: new Error()
-      };
-}
-
-function lstOfCondsToCondDatas(condDatas) {
-  return List.map((function (condEntry) {
-                if (condEntry) {
-                  var match = condEntry.tl;
-                  if (match && !match.tl) {
-                    return {
-                            conditionExpr: parseExpression(condEntry.hd),
-                            resultExpr: parseExpression(match.hd)
-                          };
-                  }
-                  
-                }
-                throw {
-                      RE_EXN_ID: "Match_failure",
-                      _1: [
-                        "Rackette.re",
-                        247,
-                        25
-                      ],
-                      Error: new Error()
-                    };
-              }), condDatas);
 }
 
 function parseDefinition(input) {
@@ -1025,7 +1145,7 @@ function parseDefinition(input) {
         RE_EXN_ID: "Match_failure",
         _1: [
           "Rackette.re",
-          270,
+          313,
           4
         ],
         Error: new Error()
@@ -1093,7 +1213,7 @@ function inEnviorment(_env, myName) {
           RE_EXN_ID: "Match_failure",
           _1: [
             "Rackette.re",
-            311,
+            354,
             4
           ],
           Error: new Error()
@@ -1128,7 +1248,7 @@ function addDefinition(env, param) {
         RE_EXN_ID: "Match_failure",
         _1: [
           "Rackette.re",
-          325,
+          368,
           11
         ],
         Error: new Error()
@@ -1199,6 +1319,7 @@ exports.not_ = not_;
 exports.initialTle = initialTle;
 exports.lambdaNamesToName = lambdaNamesToName;
 exports.lstOfCondsToCondDatas = lstOfCondsToCondDatas;
+exports.processLetNames = processLetNames;
 exports.parseExpression = parseExpression;
 exports.parseDefinition = parseDefinition;
 exports.parsePiece = parsePiece;
