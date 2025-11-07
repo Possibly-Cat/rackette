@@ -4,6 +4,13 @@ open Types;
 
 /* TODO: fill this with your initial top level environment,
  * consisting of built-in procedures like + or empty? */
+
+/*
+ add: list(value) -> value
+ input: alov, a list of values (expected 2 values)
+ output: the value that comes from adding the two numbers in the list
+ */
+
 let add: list(value) => value =
   alov =>
     switch (alov) {
@@ -14,6 +21,13 @@ let add: list(value) => value =
       failwith("too many arguments for add")
     | _lst => failwith("non-number arguments in add")
     };
+
+/**
+ subtract: list(value) -> value
+ input: alov, a list of values (expected 2 values)
+ output: the value you get from subtracting the second value in alov from the first
+ */
+
 let subtract: list(value) => value =
   alov =>
     switch (alov) {
@@ -24,6 +38,13 @@ let subtract: list(value) => value =
       failwith("too many arguments for subtract")
     | _lst => failwith("non-number arguments in subtract")
     };
+
+/**
+ multiply: list(value) -> value
+ input: alov, a list of values (expected 2 values)
+ output: the value you get from multiplying the two numbers in alov
+ */
+
 let multiply: list(value) => value =
   alov =>
     switch (alov) {
@@ -34,6 +55,13 @@ let multiply: list(value) => value =
       failwith("too many arguments for multiply")
     | _lst => failwith("non-number arguments in multiply")
     };
+
+/*
+ divide: list(value) -> value
+ input: alov, a list of values (expected 2 values)
+ output: the value you get from dividing the first value of alov by the second
+ */
+
 let divide: list(value) => value =
   alov =>
     switch (alov) {
@@ -45,6 +73,13 @@ let divide: list(value) => value =
       failwith("too many arguments for divide")
     | _lst => failwith("non-number arguments in divide")
     };
+
+/*
+ modulo: list(value) -> value
+ input: alov, a list of values (expected 2 values)
+ output: the remainder you get from dividing the first value of alov by the second
+ */
+
 let modulo: list(value) => value =
   alov =>
     switch (alov) {
@@ -55,6 +90,13 @@ let modulo: list(value) => value =
       failwith("too many arguments for remainder")
     | _lst => failwith("non-number arguments in remainder")
     };
+
+/*
+ equalityq: list(value) -> value
+ input: alov, a list of values (expected 2 values)
+ output: a boolean returning true if the two number values of alov are equivalent, false otherwise
+ */
+
 let equalityq: list(value) => value =
   alov =>
     switch (alov) {
@@ -65,6 +107,13 @@ let equalityq: list(value) => value =
       failwith("too many arguments for equalityq")
     | _lst => failwith("non-number arguments in equalityq")
     };
+
+/**
+ lessThanq: list(value) -> value
+ input: alov, a list of values (expected 2 values)
+ output: a boolean returning true if the first of alov is less than the second of alov, false otherwise
+ */
+
 let lessThanq: list(value) => value =
   alov =>
     switch (alov) {
@@ -75,6 +124,13 @@ let lessThanq: list(value) => value =
       failwith("too many arguments for less than")
     | _lst => failwith("non-number arguments in less than")
     };
+
+/*
+ greaterThanq: list(value) -> value
+ input: alov, a list of values (expected 2 values)
+ output: a boolean returning true if the first of alov is greater than the second of alov, false otherwise
+ */
+
 let greaterThanq: list(value) => value =
   alov =>
     switch (alov) {
@@ -85,6 +141,13 @@ let greaterThanq: list(value) => value =
       failwith("too many arguments for greater than")
     | _lst => failwith("non-number arguments in greater than")
     };
+
+/*
+ leqq: list(value) -> value
+ input: alov, a list of values (expected 2 values)
+ output: a boolean returning true if the first of alov is less than or equal the second of alov, false otherwise
+ */
+
 let leqq: list(value) => value =
   alov =>
     switch (alov) {
@@ -95,6 +158,13 @@ let leqq: list(value) => value =
       failwith("too many arguments for <=")
     | _lst => failwith("non-number arguments in <=")
     };
+
+/*
+ geqq: list(value) -> value
+ input: alov, a list of values (expected 2 values)
+ output: a boolean returning true if the first of alov is greater than or equal the second of alov, false otherwise
+ */
+
 let geqq: list(value) => value =
   alov =>
     switch (alov) {
@@ -105,6 +175,13 @@ let geqq: list(value) => value =
       failwith("too many arguments for >=")
     | _lst => failwith("non-number arguments in >=")
     };
+
+/*
+ equalq: list(value) -> value
+ input: alov, a list of values (expected 2 values)
+ output: a boolean returning true if the number, boolean, or list values are equal
+ */
+
 let equalq: list(value) => value =
   alov =>
     switch (alov) {
@@ -112,10 +189,18 @@ let equalq: list(value) => value =
     | [_val] => failwith("too few arguments for equal")
     | [NumV(hd), NumV(tl)] => BoolV(hd == tl)
     | [BoolV(hd), BoolV(tl)] => BoolV(hd == tl)
+    | [ListV(hd), ListV(tl)] => BoolV(hd == tl)
     | [_val1, _val2, _val3, ..._tl] =>
       failwith("too many arguments for equal")
     | _lst => failwith("non-number arguments in equal")
     };
+
+/*
+ numberq: list(value) -> value
+ input: alov, a list of values (expected 1 value)
+ output: a boolean returning true if the value of alov is a NumV, false otherwise
+ */
+
 let numberq: list(value) => value =
   alov =>
     switch (alov) {
@@ -124,6 +209,13 @@ let numberq: list(value) => value =
     | [_val1] => BoolV(false)
     | [_val1, _val2, ..._tl] => failwith("too many arguments for number?")
     };
+
+/*
+ zeroq: list(value) -> value
+ input: alov, a list of values (expected 1 value)
+ output: a boolean returning true if the value of alov is 0, false otherwise
+ */
+
 let zeroq: list(value) => value =
   alov =>
     switch (alov) {
@@ -132,6 +224,13 @@ let zeroq: list(value) => value =
     | [_val1] => failwith("non-number argument for zero?")
     | [_val1, _val2, ..._tl] => failwith("too many arguments for zero?")
     };
+
+/*
+ cons: list(value) -> value
+ input: alov, a list of values
+ output: adds the first value in alov to the list (second value) in alov to create a new list
+ */
+
 let cons: list(value) => value =
   alov =>
     switch (alov) {
@@ -141,6 +240,13 @@ let cons: list(value) => value =
     | [_val1, _val2] => failwith("improper arguments for cons")
     | [_val1, _val2, ..._tl] => failwith("too many arguments for cons")
     };
+
+/*
+ first: list(value) -> value
+ input: alov, a list of values
+ output: returns the first value of alov
+ */
+
 let first: list(value) => value =
   alov =>
     switch (alov) {
@@ -153,6 +259,13 @@ let first: list(value) => value =
     | [_val1] => failwith("non list argument in first")
     | [_val1, _val2, ..._tl] => failwith("too many arguments for first")
     };
+
+/*
+ rest: list(value) -> value
+ input: alov, a list of values
+ output: a value which is the list of values excluding the first element in alov
+ */
+
 let rest: list(value) => value =
   alov =>
     switch (alov) {
@@ -166,6 +279,13 @@ let rest: list(value) => value =
     | [_val1] => failwith("non list argument in rest")
     | [_val1, _val2, ..._tl] => failwith("too many arguments for rest")
     };
+
+/*
+ emptyq: list(value) -> value
+ input: alov, a list of values
+ output: a boolean returning true if alov is empty, and false otherwise
+  */
+
 let emptyq: list(value) => value =
   alov =>
     switch (alov) {
@@ -173,11 +293,18 @@ let emptyq: list(value) => value =
     | [ListV(myList)] =>
       switch (myList) {
       | [] => BoolV(true)
-      | [hd, ..._tl] => BoolV(false)
+      | [_hd, ..._tl] => BoolV(false)
       }
     | [_val1] => failwith("non list argument in empty?")
     | [_val1, _val2, ..._tl] => failwith("too many arguments for empty?")
     };
+
+/*
+ consq: list(value) -> value
+ input: alov, a list of values
+ output: a boolean returning true if there is at least one element in alov, false otherwise
+  */
+
 let consq: list(value) => value =
   alov =>
     switch (alov) {
@@ -185,11 +312,18 @@ let consq: list(value) => value =
     | [ListV(myList)] =>
       switch (myList) {
       | [] => BoolV(false)
-      | [hd, ..._tl] => BoolV(true)
+      | [_hd, ..._tl] => BoolV(true)
       }
     | [_val1] => failwith("non list argument in cons?")
     | [_val1, _val2, ..._tl] => failwith("too many arguments for cons?")
     };
+
+/*
+ not: list(value) -> value
+ input: alov, a list of values
+ output: a boolean returning true if the value in alov is false, and false if the value in alov is true
+  */
+
 let not: list(value) => value =
   alov =>
     switch (alov) {
@@ -198,6 +332,7 @@ let not: list(value) => value =
     | [_val1] => failwith("non bool argument in not")
     | [_val1, _val2, ..._tl] => failwith("too many arguments for not")
     };
+
 let initialTle: environment = [
   [
     (Name("+"), BuiltinV({printedRep: "builtin+", bProc: add})),
@@ -237,12 +372,19 @@ let initialTle: environment = [
 /* TODO: write the header comment parts required by the Design Recipe
  * and implement parseExpression */
 
+/*
+ lambdaNamesToName: list(concreteProgramPiece) -> list(name)
+ input: lambdaNames, a list of concreteProgramPiece (expected to be SymbolC)
+ output: a list of name values extracted from the symbols
+ */
+
 let lambdaNamesToName: list(concreteProgramPiece) => list(name) =
   lambdaNames =>
     List.map(
       symb =>
         switch (symb) {
         | SymbolC(myName) => Name(myName)
+        | _ => failwith("Lambda parameter must be a symbol")
         },
       lambdaNames,
     );
@@ -256,6 +398,7 @@ let rec lstOfCondsToCondDatas: list(concreteProgramPiece) => list(condData) =
             conditionExpr: parseExpression(condition),
             resultExpr: parseExpression(result),
           }
+        | _ => failwith("Invalid cond clause format")
         },
       condDatas,
     )
@@ -268,6 +411,7 @@ and processLetNames: list(concreteProgramPiece) => list(letPair) =
             pairName: Name(myName),
             pairExpr: parseExpression(myVal),
           }
+        | _ => failwith("Invalid let binding format")
         },
       myLetPairs,
     )
@@ -289,7 +433,7 @@ and parseExpression: concreteProgramPiece => expression =
         trueExpr: parseExpression(conc2),
         falseExpr: parseExpression(conc3),
       })
-    | ListC([SymbolC("cond"), ListC(condDatas)]) =>
+    | ListC([SymbolC("cond"), ...condDatas]) =>
       CondE(lstOfCondsToCondDatas(condDatas))
     | ListC([SymbolC("lambda"), ListC(names), body]) =>
       LambdaE({
@@ -301,13 +445,23 @@ and parseExpression: concreteProgramPiece => expression =
         letPairs: processLetNames(myLetPairs),
         letBody: parseExpression(body),
       })
-    | ListC([SymbolC(someFunction), ...args]) =>
-      ApplicationE(List.map(parseExpression, args))
-    | something => failwith("Syntax error")
+    | ListC([operator, ...args]) =>
+      ApplicationE([
+        parseExpression(operator),
+        ...List.map(parseExpression, args),
+      ])
+    | _ => failwith("Syntax error")
     };
 
 /* TODO: write the header comment parts required by the Design Recipe
  * and implement parseDefinition */
+
+/*
+ parseDefinition: concreteProgramPiece -> definition
+ input: input, a concreteProgramPiece
+ output: a definition tuple with a name and expression
+  */
+
 let parseDefinition: concreteProgramPiece => definition =
   input =>
     switch (input) {
@@ -315,10 +469,18 @@ let parseDefinition: concreteProgramPiece => definition =
         Name(myName),
         parseExpression(boundValue),
       )
+    | _ => failwith("Invalid definition format")
     };
 
 /* TODO: write the header comment parts required by the Design Recipe
  * and implement parsePiece */
+
+/*
+ parsePiece: concreteProgramPiece -> abstractProgramPiece
+ input: input, a concreteProgramPiece
+ output: a abstractProgramPiece that is either a definition or an expression
+  */
+
 let parsePiece: concreteProgramPiece => abstractProgramPiece =
   input =>
     switch (input) {
@@ -329,6 +491,12 @@ let parsePiece: concreteProgramPiece => abstractProgramPiece =
 
 /* TODO: write the header comment parts required by the Design Recipe
  * for parse */
+
+/*
+ parse: concreteProgram -> abstractProgram
+
+  */
+
 let parse: concreteProgram => abstractProgram =
   input =>
     /* this will parse all of the pieces of this program,
@@ -337,69 +505,72 @@ let parse: concreteProgram => abstractProgram =
 
 /* TODO: write the header comment parts required by the Design Recipe
  * and implement eval */
-let rec inBindingList: (bindingList, name) => bool =
-  (alob, myName) =>
-    switch (alob) {
-    | [] => false
-    | [(myName, _something), ..._tl] => true
-    | [(someName, _something), ...tl] => inBindingList(tl, myName)
-    };
-let rec inEnviorment: (environment, name) => bool =
-  (env, myName) =>
-    switch (env) {
-    | [[]] => false
-    | [bindingList1, ...tl] =>
-      if (inBindingList(bindingList1, myName)) {
-        true;
-      } else {
-        inEnviorment(tl, myName);
-      }
-    };
-
-let rec getFromBindingList: (bindingList, string) => value =
-  (alob, myName) =>
-    switch (alob) {
-    | [(Name(myName), someValue), ..._tl] => someValue
-    | [_hd, ...tl] => getFromBindingList(tl, myName)
-    };
-
-let rec findVarInEnvironment: (environment, string) => value =
-  (env, myName) =>
-    switch (env) {
-    | [[]] => failwith("variable used before definition")
-    | [firstBindingList, ...tl] =>
-      if (inBindingList(firstBindingList, Name(myName))) {
-        getFromBindingList(firstBindingList, myName);
-      } else {
-        findVarInEnvironment([tl], myName);
-      }
-    };
-let rec handleCond: (environment, environment, list(condData)) => expression =
+let rec handleCond: (environment, environment, list(condData)) => value =
   (tle, env, myCondDatas) =>
     switch (myCondDatas) {
     | [] => failwith("no conditions evaluated to true in a cond statement")
     | [{conditionExpr: condition, resultExpr: result}, ...tl] =>
       switch (eval(tle, env, condition)) {
-      | BoolV(true) => result
+      | BoolV(true) => eval(tle, env, result)
       | BoolV(false) => handleCond(tle, env, tl)
       | _ => failwith("non-bool as condition in a cond statement")
       }
     }
 and eval: (environment, environment, expression) => value =
-  (tle, env, expr) =>
+  (tle, env, expr) => {
+    /*
+     lookup: (environment, environment, name) => value
+     Input: tle (top-level environment), env (local environment), targetName (name to search for)
+     Output: the value bound to targetName
+
+     basically lookup looks for a name in the environment by first checking the local environment then the top-level environment
+     */
+    let rec lookup: (environment, environment, name) => value =
+      (tle, env, targetName) =>
+        switch (env) {
+        | [] =>
+          switch (tle) {
+          | [] => failwith("Unbound name")
+          | [bindingList, ...tleTail] =>
+            switch (
+              List.find_opt(((name, _)) => name == targetName, bindingList)
+            ) {
+            | Some((_, value)) => value
+            | None => lookup(tleTail, [], targetName)
+            }
+          }
+        | [bindingList, ...envTail] =>
+          switch (
+            List.find_opt(((name, _)) => name == targetName, bindingList)
+          ) {
+          | Some((_, value)) => value
+          | None => lookup(tle, envTail, targetName)
+          }
+        };
+
     switch (expr) {
     | NumE(myNum) => NumV(myNum)
     | BoolE(myBool) => BoolV(myBool)
     | EmptyE => ListV([])
-    | NameE(Name(myName)) => findVarInEnvirenment(env, myName)
+    | NameE(myName) => lookup(tle, env, myName)
     | AndE(expr1, expr2) =>
-      switch (eval(tle, env, expr1), eval(tle, env, expr2)) {
-      | (BoolV(aBool1), BoolV(aBool2)) => BoolV(aBool1 && aBool2)
+      switch (eval(tle, env, expr1)) {
+      | BoolV(false) => BoolV(false)
+      | BoolV(true) =>
+        switch (eval(tle, env, expr2)) {
+        | BoolV(b) => BoolV(b)
+        | _ => failwith("non booleans in an and statement")
+        }
       | _ => failwith("non booleans in an and statement")
       }
     | OrE(expr1, expr2) =>
-      switch (eval(tle, env, expr1), eval(tle, env, expr2)) {
-      | (BoolV(aBool1), BoolV(aBool2)) => BoolV(aBool1 || aBool2)
+      switch (eval(tle, env, expr1)) {
+      | BoolV(true) => BoolV(true)
+      | BoolV(false) =>
+        switch (eval(tle, env, expr2)) {
+        | BoolV(b) => BoolV(b)
+        | _ => failwith("non booleans in an or statement")
+        }
       | _ => failwith("non booleans in an or statement")
       }
     | IfE({boolExpr: expr1, trueExpr: expr2, falseExpr: expr3}) =>
@@ -408,42 +579,69 @@ and eval: (environment, environment, expression) => value =
       | BoolV(false) => eval(tle, env, expr3)
       | _ => failwith("non booleans as first argument in an if statement")
       }
-    | CondE(myCondDatas) =>
-      eval(tle, env, handleCond(tle, env, myCondDatas))
-    | LambdaE({nameList: myNames, lambdaBody: body}) =>
-      ClosureV({cNameList: myNames, cExpr: body, cEnv: env})
-    | LetE({letPairs: listOfLetPairs, letBody: body}) =>
-      eval(
-        tle,
-        [
-          List.map(
-            myLetPair =>
-              switch (myLetPair) {
-              //This whole switch just sends a letPair to
-              | {pairName: Name(myName), pairExpr: expr} => (
-                  // an equivalent
-                  Name(myName), // binding
-                  eval(tle, env, expr),
-                )
-              },
-            listOfLetPairs,
-          ),
-          ...env,
-        ],
-        body,
-      )
-    // | ApplicationE([NameE(Name(someFunction)), ...args]) =>
+    | CondE(myCondDatas) => handleCond(tle, env, myCondDatas)
+    | LambdaE({nameList, lambdaBody}) =>
+      ClosureV({cNameList: nameList, cExpr: lambdaBody, cEnv: env})
+    | LetE({letPairs, letBody}) =>
+      let newBindings =
+        List.map(
+          ({pairName, pairExpr}) => (pairName, eval(tle, env, pairExpr)),
+          letPairs,
+        );
+      eval(tle, [newBindings, ...env], letBody);
+    | ApplicationE([]) => failwith("Cannot apply empty application")
+    | ApplicationE([operatorExpr, ...argExprs]) =>
+      let operatorValue = eval(tle, env, operatorExpr);
+      let argValues = List.map(eval(tle, env), argExprs);
+      switch (operatorValue) {
+      | BuiltinV({bProc}) => bProc(argValues)
+      | ClosureV({cNameList, cExpr, cEnv}) =>
+        if (List.length(cNameList) != List.length(argValues)) {
+          failwith("Wrong number of arguments to function");
+        } else {
+          let newBindings = List.combine(cNameList, argValues);
+          eval(tle, [newBindings, ...cEnv], cExpr);
+        }
+      | _ => failwith("Tried to apply non-function")
+      };
+    };
+  };
+
+let rec inBindingList: (bindingList, name) => bool =
+  (alob, myName) =>
+    switch (alob) {
+    | [] => false
+    | [(name, _something), ...tl] =>
+      if (name == myName) {
+        true;
+      } else {
+        inBindingList(tl, myName);
+      }
+    };
+
+let rec inEnvironment: (environment, name) => bool =
+  (env, myName) =>
+    switch (env) {
+    | [] => false
+    | [[]] => false
+    | [bindingList1, ...tl] =>
+      if (inBindingList(bindingList1, myName)) {
+        true;
+      } else {
+        inEnvironment(tl, myName);
+      }
     };
 
 /* TODO: write the header comment parts required by the Design Recipe */
 let rec addDefinition: (environment, (name, expression)) => environment =
   (env, (id, expr)) =>
-    if (inEnviorment(env, id)) {
+    if (inEnvironment(env, id)) {
       env;
     } else {
       switch (env) {
+      | [] => failwith("Cannot add definition to empty environment")
       | [bindingList1, ...tl] => [
-          [(id, List.hd(process([Expression(expr)]))), ...bindingList1],
+          [(id, eval(env, [], expr)), ...bindingList1],
           ...tl,
         ]
       };
@@ -467,14 +665,29 @@ and process: abstractProgram => list(value) =
         };
     processHelper(initialTle, pieces);
   };
+
 /* TODO: write the header comment parts required by the Design Recipe
  * and implement stringOfValue*/
 let rec stringOfValue: value => string =
-  aValue => failwith("stringOfValue is not yet implemented");
+  aValue =>
+    switch (aValue) {
+    | NumV(n) => string_of_int(n)
+    | BoolV(true) => "#t"
+    | BoolV(false) => "#f"
+    | ListV(values) =>
+      "'(" ++ String.concat(" ", List.map(stringOfValue, values)) ++ ")"
+    | BuiltinV({printedRep}) => printedRep
+    | ClosureV(_) => "#<procedure>"
+    };
 
 /* TODO: write the header comment parts required by the Design Recipe */
 
-/* TODO: write the header comment parts required by the Design Recipe */
+/*
+ rackette: rawProgram -> list(string)
+ input: program, a rawProgram
+ output:
+  */
+
 let rackette: rawProgram => list(string) =
   program => List.map(stringOfValue, process(parse(readAll(program))));
 
@@ -490,4 +703,29 @@ checkExpectExpression(
   parseExpression(read("empty")),
   EmptyE,
   "read and parse empty expression",
+);
+/* sample test : parsePiece on concreteProgramPiece */
+checkExpectAbstractProgramPiece(
+  parsePiece(SymbolC("empty")),
+  Expression(EmptyE),
+  "parse piece on empty",
+);
+/* sample test : parsePiece with read */
+checkExpectAbstractProgramPiece(
+  parsePiece(read("empty")),
+  Expression(EmptyE),
+  "read and parse piece on empty",
+);
+/* sample test : evaluation with stringOfValue */
+checkExpect(
+  stringOfValue(eval(initialTle, [], EmptyE)),
+  "empty",
+  "evaluation of empty list",
+);
+/* sample test : evaluation with stringOfValue, parse, and read */
+checkExpect(
+  stringOfValue(eval(initialTle, [], parseExpression(read("empty")))),
+  "empty",
+  "evaluation of empty list
+with parse and read ",
 );

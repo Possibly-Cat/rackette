@@ -2,6 +2,9 @@
 'use strict';
 
 var List = require("bs-platform/lib/js/list.js");
+var Curry = require("bs-platform/lib/js/curry.js");
+var $$String = require("bs-platform/lib/js/string.js");
+var Caml_obj = require("bs-platform/lib/js/caml_obj.js");
 var Caml_int32 = require("bs-platform/lib/js/caml_int32.js");
 var Pervasives = require("bs-platform/lib/js/pervasives.js");
 var Read$Rackette = require("./Read.bs.js");
@@ -354,8 +357,20 @@ function equalq(alov) {
         } else {
           return Pervasives.failwith("non-number arguments in equal");
         }
-    default:
-      return Pervasives.failwith("non-number arguments in equal");
+    case /* ListV */2 :
+        var tl$2 = alov.tl.hd;
+        if (tl$2.TAG === /* ListV */2) {
+          return {
+                  TAG: /* BoolV */1,
+                  _0: Caml_obj.caml_equal(_val._0, tl$2._0)
+                };
+        } else {
+          return Pervasives.failwith("non-number arguments in equal");
+        }
+    case /* BuiltinV */3 :
+    case /* ClosureV */4 :
+        return Pervasives.failwith("non-number arguments in equal");
+    
   }
 }
 
@@ -833,15 +848,7 @@ function lambdaNamesToName(lambdaNames) {
                             };
                   case /* NumberC */0 :
                   case /* ListC */2 :
-                      throw {
-                            RE_EXN_ID: "Match_failure",
-                            _1: [
-                              "Rackette.re",
-                              244,
-                              8
-                            ],
-                            Error: new Error()
-                          };
+                      return Pervasives.failwith("Lambda parameter must be a symbol");
                   
                 }
               }), lambdaNames);
@@ -852,31 +859,23 @@ function lstOfCondsToCondDatas(condDatas) {
                 switch (condEntry.TAG | 0) {
                   case /* NumberC */0 :
                   case /* SymbolC */1 :
-                      break;
+                      return Pervasives.failwith("Invalid cond clause format");
                   case /* ListC */2 :
                       var match = condEntry._0;
-                      if (match) {
-                        var match$1 = match.tl;
-                        if (match$1 && !match$1.tl) {
-                          return {
-                                  conditionExpr: parseExpression(match.hd),
-                                  resultExpr: parseExpression(match$1.hd)
-                                };
-                        }
-                        
+                      if (!match) {
+                        return Pervasives.failwith("Invalid cond clause format");
                       }
-                      break;
+                      var match$1 = match.tl;
+                      if (match$1 && !match$1.tl) {
+                        return {
+                                conditionExpr: parseExpression(match.hd),
+                                resultExpr: parseExpression(match$1.hd)
+                              };
+                      } else {
+                        return Pervasives.failwith("Invalid cond clause format");
+                      }
                   
                 }
-                throw {
-                      RE_EXN_ID: "Match_failure",
-                      _1: [
-                        "Rackette.re",
-                        254,
-                        8
-                      ],
-                      Error: new Error()
-                    };
               }), condDatas);
 }
 
@@ -885,41 +884,33 @@ function processLetNames(myLetPairs) {
                 switch (pair.TAG | 0) {
                   case /* NumberC */0 :
                   case /* SymbolC */1 :
-                      break;
+                      return Pervasives.failwith("Invalid let binding format");
                   case /* ListC */2 :
                       var match = pair._0;
-                      if (match) {
-                        var myName = match.hd;
-                        switch (myName.TAG | 0) {
-                          case /* SymbolC */1 :
-                              var match$1 = match.tl;
-                              if (match$1 && !match$1.tl) {
-                                return {
-                                        pairName: /* Name */{
-                                          _0: myName._0
-                                        },
-                                        pairExpr: parseExpression(match$1.hd)
-                                      };
-                              }
-                              break;
-                          case /* NumberC */0 :
-                          case /* ListC */2 :
-                              break;
-                          
-                        }
+                      if (!match) {
+                        return Pervasives.failwith("Invalid let binding format");
                       }
-                      break;
+                      var myName = match.hd;
+                      switch (myName.TAG | 0) {
+                        case /* SymbolC */1 :
+                            var match$1 = match.tl;
+                            if (match$1 && !match$1.tl) {
+                              return {
+                                      pairName: /* Name */{
+                                        _0: myName._0
+                                      },
+                                      pairExpr: parseExpression(match$1.hd)
+                                    };
+                            } else {
+                              return Pervasives.failwith("Invalid let binding format");
+                            }
+                        case /* NumberC */0 :
+                        case /* ListC */2 :
+                            return Pervasives.failwith("Invalid let binding format");
+                        
+                      }
                   
                 }
-                throw {
-                      RE_EXN_ID: "Match_failure",
-                      _1: [
-                        "Rackette.re",
-                        266,
-                        8
-                      ],
-                      Error: new Error()
-                    };
               }), myLetPairs);
 }
 
@@ -958,10 +949,10 @@ function parseExpression(input) {
         if (!match) {
           return Pervasives.failwith("Syntax error");
         }
-        var someFunction = match.hd;
-        switch (someFunction.TAG | 0) {
+        var operator = match.hd;
+        switch (operator.TAG | 0) {
           case /* SymbolC */1 :
-              switch (someFunction._0) {
+              switch (operator._0) {
                 case "and" :
                     var match$1 = match.tl;
                     if (match$1) {
@@ -977,38 +968,23 @@ function parseExpression(input) {
                     }
                     break;
                 case "cond" :
+                    return {
+                            TAG: /* CondE */6,
+                            _0: lstOfCondsToCondDatas(match.tl)
+                          };
+                case "if" :
                     var match$3 = match.tl;
                     if (match$3) {
-                      var condDatas = match$3.hd;
-                      switch (condDatas.TAG | 0) {
-                        case /* NumberC */0 :
-                        case /* SymbolC */1 :
-                            break;
-                        case /* ListC */2 :
-                            if (!match$3.tl) {
-                              return {
-                                      TAG: /* CondE */6,
-                                      _0: lstOfCondsToCondDatas(condDatas._0)
-                                    };
-                            }
-                            break;
-                        
-                      }
-                    }
-                    break;
-                case "if" :
-                    var match$4 = match.tl;
-                    if (match$4) {
-                      var match$5 = match$4.tl;
-                      if (match$5) {
-                        var match$6 = match$5.tl;
-                        if (match$6 && !match$6.tl) {
+                      var match$4 = match$3.tl;
+                      if (match$4) {
+                        var match$5 = match$4.tl;
+                        if (match$5 && !match$5.tl) {
                           return {
                                   TAG: /* IfE */5,
                                   _0: {
-                                    boolExpr: parseExpression(match$4.hd),
-                                    trueExpr: parseExpression(match$5.hd),
-                                    falseExpr: parseExpression(match$6.hd)
+                                    boolExpr: parseExpression(match$3.hd),
+                                    trueExpr: parseExpression(match$4.hd),
+                                    falseExpr: parseExpression(match$5.hd)
                                   }
                                 };
                         }
@@ -1018,21 +994,21 @@ function parseExpression(input) {
                     }
                     break;
                 case "lambda" :
-                    var match$7 = match.tl;
-                    if (match$7) {
-                      var names = match$7.hd;
+                    var match$6 = match.tl;
+                    if (match$6) {
+                      var names = match$6.hd;
                       switch (names.TAG | 0) {
                         case /* NumberC */0 :
                         case /* SymbolC */1 :
                             break;
                         case /* ListC */2 :
-                            var match$8 = match$7.tl;
-                            if (match$8 && !match$8.tl) {
+                            var match$7 = match$6.tl;
+                            if (match$7 && !match$7.tl) {
                               return {
                                       TAG: /* LambdaE */7,
                                       _0: {
                                         nameList: lambdaNamesToName(names._0),
-                                        lambdaBody: parseExpression(match$8.hd)
+                                        lambdaBody: parseExpression(match$7.hd)
                                       }
                                     };
                             }
@@ -1042,21 +1018,21 @@ function parseExpression(input) {
                     }
                     break;
                 case "let" :
-                    var match$9 = match.tl;
-                    if (match$9) {
-                      var myLetPairs = match$9.hd;
+                    var match$8 = match.tl;
+                    if (match$8) {
+                      var myLetPairs = match$8.hd;
                       switch (myLetPairs.TAG | 0) {
                         case /* NumberC */0 :
                         case /* SymbolC */1 :
                             break;
                         case /* ListC */2 :
-                            var match$10 = match$9.tl;
-                            if (match$10 && !match$10.tl) {
+                            var match$9 = match$8.tl;
+                            if (match$9 && !match$9.tl) {
                               return {
                                       TAG: /* LetE */8,
                                       _0: {
                                         letPairs: processLetNames(myLetPairs._0),
-                                        letBody: parseExpression(match$10.hd)
+                                        letBody: parseExpression(match$9.hd)
                                       }
                                     };
                             }
@@ -1066,14 +1042,14 @@ function parseExpression(input) {
                     }
                     break;
                 case "or" :
-                    var match$11 = match.tl;
-                    if (match$11) {
-                      var match$12 = match$11.tl;
-                      if (match$12 && !match$12.tl) {
+                    var match$10 = match.tl;
+                    if (match$10) {
+                      var match$11 = match$10.tl;
+                      if (match$11 && !match$11.tl) {
                         return {
                                 TAG: /* OrE */4,
-                                _0: parseExpression(match$11.hd),
-                                _1: parseExpression(match$12.hd)
+                                _0: parseExpression(match$10.hd),
+                                _1: parseExpression(match$11.hd)
                               };
                       }
                       
@@ -1082,15 +1058,19 @@ function parseExpression(input) {
                 default:
                   
               }
-              return {
-                      TAG: /* ApplicationE */9,
-                      _0: List.map(parseExpression, match.tl)
-                    };
+              break;
           case /* NumberC */0 :
           case /* ListC */2 :
-              return Pervasives.failwith("Syntax error");
+              break;
           
         }
+        return {
+                TAG: /* ApplicationE */9,
+                _0: {
+                  hd: parseExpression(operator),
+                  tl: List.map(parseExpression, match.tl)
+                }
+              };
         break;
     
   }
@@ -1100,56 +1080,48 @@ function parseDefinition(input) {
   switch (input.TAG | 0) {
     case /* NumberC */0 :
     case /* SymbolC */1 :
-        break;
+        return Pervasives.failwith("Invalid definition format");
     case /* ListC */2 :
         var match = input._0;
-        if (match) {
-          var match$1 = match.hd;
-          switch (match$1.TAG | 0) {
-            case /* SymbolC */1 :
-                if (match$1._0 === "define") {
-                  var match$2 = match.tl;
-                  if (match$2) {
-                    var myName = match$2.hd;
-                    switch (myName.TAG | 0) {
-                      case /* SymbolC */1 :
-                          var match$3 = match$2.tl;
-                          if (match$3 && !match$3.tl) {
-                            return [
-                                    /* Name */{
-                                      _0: myName._0
-                                    },
-                                    parseExpression(match$3.hd)
-                                  ];
-                          }
-                          break;
-                      case /* NumberC */0 :
-                      case /* ListC */2 :
-                          break;
-                      
-                    }
-                  }
-                  
-                }
-                break;
-            case /* NumberC */0 :
-            case /* ListC */2 :
-                break;
-            
-          }
+        if (!match) {
+          return Pervasives.failwith("Invalid definition format");
         }
-        break;
+        var match$1 = match.hd;
+        switch (match$1.TAG | 0) {
+          case /* SymbolC */1 :
+              if (match$1._0 !== "define") {
+                return Pervasives.failwith("Invalid definition format");
+              }
+              var match$2 = match.tl;
+              if (!match$2) {
+                return Pervasives.failwith("Invalid definition format");
+              }
+              var myName = match$2.hd;
+              switch (myName.TAG | 0) {
+                case /* SymbolC */1 :
+                    var match$3 = match$2.tl;
+                    if (match$3 && !match$3.tl) {
+                      return [
+                              /* Name */{
+                                _0: myName._0
+                              },
+                              parseExpression(match$3.hd)
+                            ];
+                    } else {
+                      return Pervasives.failwith("Invalid definition format");
+                    }
+                case /* NumberC */0 :
+                case /* ListC */2 :
+                    return Pervasives.failwith("Invalid definition format");
+                
+              }
+          case /* NumberC */0 :
+          case /* ListC */2 :
+              return Pervasives.failwith("Invalid definition format");
+          
+        }
     
   }
-  throw {
-        RE_EXN_ID: "Match_failure",
-        _1: [
-          "Rackette.re",
-          313,
-          4
-        ],
-        Error: new Error()
-      };
 }
 
 function parsePiece(input) {
@@ -1210,7 +1182,7 @@ function handleCond(tle, env, _myCondDatas) {
       return Pervasives.failwith("non-bool as condition in a cond statement");
     }
     if (match$1._0) {
-      return match.resultExpr;
+      return $$eval(tle, env, match.resultExpr);
     }
     _myCondDatas = myCondDatas.tl;
     continue ;
@@ -1238,24 +1210,76 @@ function $$eval(tle, _env, _expr) {
                   TAG: /* BoolV */1,
                   _0: expr._0
                 };
+      case /* NameE */2 :
+          var _tle = tle;
+          var _env$1 = env;
+          var targetName = expr._0;
+          while(true) {
+            var env$1 = _env$1;
+            var tle$1 = _tle;
+            if (env$1) {
+              var match = List.find_opt((function(targetName){
+                  return function (param) {
+                    return Caml_obj.caml_equal(param[0], targetName);
+                  }
+                  }(targetName)), env$1.hd);
+              if (match !== undefined) {
+                return match[1];
+              }
+              _env$1 = env$1.tl;
+              continue ;
+            }
+            if (!tle$1) {
+              return Pervasives.failwith("Unbound name");
+            }
+            var match$1 = List.find_opt((function(targetName){
+                return function (param) {
+                  return Caml_obj.caml_equal(param[0], targetName);
+                }
+                }(targetName)), tle$1.hd);
+            if (match$1 !== undefined) {
+              return match$1[1];
+            }
+            _env$1 = /* [] */0;
+            _tle = tle$1.tl;
+            continue ;
+          };
       case /* AndE */3 :
-          var match = $$eval(tle, env, expr._0);
-          var match$1 = $$eval(tle, env, expr._1);
-          if (match.TAG === /* BoolV */1 && match$1.TAG === /* BoolV */1) {
+          var match$2 = $$eval(tle, env, expr._0);
+          if (match$2.TAG !== /* BoolV */1) {
+            return Pervasives.failwith("non booleans in an and statement");
+          }
+          if (!match$2._0) {
             return {
                     TAG: /* BoolV */1,
-                    _0: match._0 && match$1._0
+                    _0: false
+                  };
+          }
+          var b = $$eval(tle, env, expr._1);
+          if (b.TAG === /* BoolV */1) {
+            return {
+                    TAG: /* BoolV */1,
+                    _0: b._0
                   };
           } else {
             return Pervasives.failwith("non booleans in an and statement");
           }
       case /* OrE */4 :
-          var match$2 = $$eval(tle, env, expr._0);
-          var match$3 = $$eval(tle, env, expr._1);
-          if (match$2.TAG === /* BoolV */1 && match$3.TAG === /* BoolV */1) {
+          var match$3 = $$eval(tle, env, expr._0);
+          if (match$3.TAG !== /* BoolV */1) {
+            return Pervasives.failwith("non booleans in an or statement");
+          }
+          if (match$3._0) {
             return {
                     TAG: /* BoolV */1,
-                    _0: match$2._0 || match$3._0
+                    _0: true
+                  };
+          }
+          var b$1 = $$eval(tle, env, expr._1);
+          if (b$1.TAG === /* BoolV */1) {
+            return {
+                    TAG: /* BoolV */1,
+                    _0: b$1._0
                   };
           } else {
             return Pervasives.failwith("non booleans in an or statement");
@@ -1273,8 +1297,7 @@ function $$eval(tle, _env, _expr) {
           _expr = match$4.falseExpr;
           continue ;
       case /* CondE */6 :
-          _expr = handleCond(tle, env, expr._0);
-          continue ;
+          return handleCond(tle, env, expr._0);
       case /* LambdaE */7 :
           var match$6 = expr._0;
           return {
@@ -1287,103 +1310,105 @@ function $$eval(tle, _env, _expr) {
                 };
       case /* LetE */8 :
           var match$7 = expr._0;
+          var newBindings = List.map((function(env){
+              return function (param) {
+                return [
+                        param.pairName,
+                        $$eval(tle, env, param.pairExpr)
+                      ];
+              }
+              }(env)), match$7.letPairs);
           _expr = match$7.letBody;
           _env = {
-            hd: List.map((function(env){
-                return function (myLetPair) {
-                  return [
-                          /* Name */{
-                            _0: myLetPair.pairName._0
-                          },
-                          $$eval(tle, env, myLetPair.pairExpr)
-                        ];
-                }
-                }(env)), match$7.letPairs),
+            hd: newBindings,
             tl: env
           };
           continue ;
-      case /* NameE */2 :
       case /* ApplicationE */9 :
-          throw {
-                RE_EXN_ID: "Match_failure",
-                _1: [
-                  "Rackette.re",
-                  353,
-                  4
-                ],
-                Error: new Error()
-              };
+          var match$8 = expr._0;
+          if (!match$8) {
+            return Pervasives.failwith("Cannot apply empty application");
+          }
+          var operatorValue = $$eval(tle, env, match$8.hd);
+          var argValues = List.map((function(env){
+              return function (param) {
+                return $$eval(tle, env, param);
+              }
+              }(env)), match$8.tl);
+          switch (operatorValue.TAG | 0) {
+            case /* BuiltinV */3 :
+                return Curry._1(operatorValue._0.bProc, argValues);
+            case /* ClosureV */4 :
+                var match$9 = operatorValue._0;
+                var cNameList = match$9.cNameList;
+                if (List.length(cNameList) !== List.length(argValues)) {
+                  return Pervasives.failwith("Wrong number of arguments to function");
+                }
+                var newBindings$1 = List.combine(cNameList, argValues);
+                _expr = match$9.cExpr;
+                _env = {
+                  hd: newBindings$1,
+                  tl: match$9.cEnv
+                };
+                continue ;
+            default:
+              return Pervasives.failwith("Tried to apply non-function");
+          }
       
     }
   };
 }
 
-function inBindingList(alob, myName) {
-  if (alob) {
-    return true;
-  } else {
-    return false;
-  }
+function inBindingList(_alob, myName) {
+  while(true) {
+    var alob = _alob;
+    if (!alob) {
+      return false;
+    }
+    if (Caml_obj.caml_equal(alob.hd[0], myName)) {
+      return true;
+    }
+    _alob = alob.tl;
+    continue ;
+  };
 }
 
-function inEnviorment(_env, myName) {
+function inEnvironment(_env, myName) {
   while(true) {
     var env = _env;
-    if (env) {
-      var bindingList1 = env.hd;
-      if (!bindingList1 && !env.tl) {
-        return false;
-      }
-      if (inBindingList(bindingList1, myName)) {
-        return true;
-      }
-      _env = env.tl;
-      continue ;
+    if (!env) {
+      return false;
     }
-    throw {
-          RE_EXN_ID: "Match_failure",
-          _1: [
-            "Rackette.re",
-            411,
-            4
-          ],
-          Error: new Error()
-        };
+    var bindingList1 = env.hd;
+    if (!bindingList1 && !env.tl) {
+      return false;
+    }
+    if (inBindingList(bindingList1, myName)) {
+      return true;
+    }
+    _env = env.tl;
+    continue ;
   };
 }
 
 function addDefinition(env, param) {
   var id = param[0];
-  if (inEnviorment(env, id)) {
+  if (inEnvironment(env, id)) {
     return env;
-  }
-  if (env) {
+  } else if (env) {
     return {
             hd: {
               hd: [
                 id,
-                List.hd($$process({
-                          hd: {
-                            TAG: /* Expression */1,
-                            _0: param[1]
-                          },
-                          tl: /* [] */0
-                        }))
+                $$eval(env, /* [] */0, param[1])
               ],
               tl: env.hd
             },
             tl: env.tl
           };
+  } else {
+    return Pervasives.failwith("Cannot add definition to empty environment");
   }
-  throw {
-        RE_EXN_ID: "Match_failure",
-        _1: [
-          "Rackette.re",
-          425,
-          11
-        ],
-        Error: new Error()
-      };
 }
 
 function $$process(pieces) {
@@ -1414,7 +1439,23 @@ function $$process(pieces) {
 }
 
 function stringOfValue(aValue) {
-  return Pervasives.failwith("stringOfValue is not yet implemented");
+  switch (aValue.TAG | 0) {
+    case /* NumV */0 :
+        return String(aValue._0);
+    case /* BoolV */1 :
+        if (aValue._0) {
+          return "#t";
+        } else {
+          return "#f";
+        }
+    case /* ListV */2 :
+        return "'(" + ($$String.concat(" ", List.map(stringOfValue, aValue._0)) + ")");
+    case /* BuiltinV */3 :
+        return aValue._0.printedRep;
+    case /* ClosureV */4 :
+        return "#<procedure>";
+    
+  }
 }
 
 function rackette(program) {
@@ -1427,6 +1468,26 @@ CS17SetupRackette$Rackette.checkExpectExpression(parseExpression({
         }), /* EmptyE */0, "parse empty expression");
 
 CS17SetupRackette$Rackette.checkExpectExpression(parseExpression(Read$Rackette.Reader.read("empty")), /* EmptyE */0, "read and parse empty expression");
+
+CS17SetupRackette$Rackette.checkExpectAbstractProgramPiece({
+      TAG: /* Expression */1,
+      _0: parseExpression({
+            TAG: /* SymbolC */1,
+            _0: "empty"
+          })
+    }, {
+      TAG: /* Expression */1,
+      _0: /* EmptyE */0
+    }, "parse piece on empty");
+
+CS17SetupRackette$Rackette.checkExpectAbstractProgramPiece(parsePiece(Read$Rackette.Reader.read("empty")), {
+      TAG: /* Expression */1,
+      _0: /* EmptyE */0
+    }, "read and parse piece on empty");
+
+CS17SetupRackette$Rackette.checkExpect(stringOfValue($$eval(initialTle, /* [] */0, /* EmptyE */0)), "empty", "evaluation of empty list");
+
+CS17SetupRackette$Rackette.checkExpect(stringOfValue($$eval(initialTle, /* [] */0, parseExpression(Read$Rackette.Reader.read("empty")))), "empty", "evaluation of empty list\nwith parse and read ");
 
 exports.add = add;
 exports.subtract = subtract;
@@ -1458,7 +1519,7 @@ exports.parse = parse;
 exports.handleCond = handleCond;
 exports.$$eval = $$eval;
 exports.inBindingList = inBindingList;
-exports.inEnviorment = inEnviorment;
+exports.inEnvironment = inEnvironment;
 exports.addDefinition = addDefinition;
 exports.$$process = $$process;
 exports.stringOfValue = stringOfValue;
