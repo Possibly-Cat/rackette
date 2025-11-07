@@ -2,6 +2,7 @@
 'use strict';
 
 var Read$Rackette = require("./Read.bs.js");
+var Rackette$Rackette = require("./Rackette.bs.js");
 var CS17SetupRackette$Rackette = require("./CS17SetupRackette.bs.js");
 
 CS17SetupRackette$Rackette.checkExpectConcreteProgram(Read$Rackette.Reader.readAll("(+ 4 5)"), {
@@ -129,5 +130,641 @@ CS17SetupRackette$Rackette.checkExpectConcreteProgram(Read$Rackette.Reader.readA
       },
       tl: /* [] */0
     }, "readAll test - 3");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.lambdaNamesToName({
+          hd: {
+            TAG: /* SymbolC */1,
+            _0: "+"
+          },
+          tl: {
+            hd: {
+              TAG: /* SymbolC */1,
+              _0: "x"
+            },
+            tl: /* [] */0
+          }
+        }), {
+      hd: /* Name */{
+        _0: "+"
+      },
+      tl: {
+        hd: /* Name */{
+          _0: "x"
+        },
+        tl: /* [] */0
+      }
+    }, "lambdaNamesToName - 1");
+
+CS17SetupRackette$Rackette.checkExpectExpression(Rackette$Rackette.parseExpression({
+          TAG: /* NumberC */0,
+          _0: 4
+        }), {
+      TAG: /* NumE */0,
+      _0: 4
+    }, "parseExpression - single num");
+
+CS17SetupRackette$Rackette.checkExpectExpression(Rackette$Rackette.parseExpression({
+          TAG: /* SymbolC */1,
+          _0: "true"
+        }), {
+      TAG: /* BoolE */1,
+      _0: true
+    }, "parseExpression - true");
+
+CS17SetupRackette$Rackette.checkExpectExpression(Rackette$Rackette.parseExpression({
+          TAG: /* SymbolC */1,
+          _0: "false"
+        }), {
+      TAG: /* BoolE */1,
+      _0: false
+    }, "parseExpression - false");
+
+CS17SetupRackette$Rackette.checkExpectExpression(Rackette$Rackette.parseExpression({
+          TAG: /* SymbolC */1,
+          _0: "empty"
+        }), /* EmptyE */0, "parseExpression - empty");
+
+CS17SetupRackette$Rackette.checkExpectExpression(Rackette$Rackette.parseExpression({
+          TAG: /* SymbolC */1,
+          _0: "x"
+        }), {
+      TAG: /* NameE */2,
+      _0: /* Name */{
+        _0: "x"
+      }
+    }, "parseExpression - some variable");
+
+CS17SetupRackette$Rackette.checkExpectExpression(Rackette$Rackette.parseExpression({
+          TAG: /* ListC */2,
+          _0: {
+            hd: {
+              TAG: /* SymbolC */1,
+              _0: "and"
+            },
+            tl: {
+              hd: {
+                TAG: /* SymbolC */1,
+                _0: "true"
+              },
+              tl: {
+                hd: {
+                  TAG: /* ListC */2,
+                  _0: {
+                    hd: {
+                      TAG: /* SymbolC */1,
+                      _0: "="
+                    },
+                    tl: {
+                      hd: {
+                        TAG: /* NumberC */0,
+                        _0: 4
+                      },
+                      tl: {
+                        hd: {
+                          TAG: /* NumberC */0,
+                          _0: 4
+                        },
+                        tl: /* [] */0
+                      }
+                    }
+                  }
+                },
+                tl: /* [] */0
+              }
+            }
+          }
+        }), {
+      TAG: /* AndE */3,
+      _0: {
+        TAG: /* BoolE */1,
+        _0: true
+      },
+      _1: {
+        TAG: /* ApplicationE */9,
+        _0: {
+          hd: {
+            TAG: /* NameE */2,
+            _0: /* Name */{
+              _0: "="
+            }
+          },
+          tl: {
+            hd: {
+              TAG: /* NumE */0,
+              _0: 4
+            },
+            tl: {
+              hd: {
+                TAG: /* NumE */0,
+                _0: 4
+              },
+              tl: /* [] */0
+            }
+          }
+        }
+      }
+    }, "parseExpression - and statement");
+
+CS17SetupRackette$Rackette.checkExpectExpression(Rackette$Rackette.parseExpression({
+          TAG: /* ListC */2,
+          _0: {
+            hd: {
+              TAG: /* SymbolC */1,
+              _0: "or"
+            },
+            tl: {
+              hd: {
+                TAG: /* SymbolC */1,
+                _0: "true"
+              },
+              tl: {
+                hd: {
+                  TAG: /* ListC */2,
+                  _0: {
+                    hd: {
+                      TAG: /* SymbolC */1,
+                      _0: "="
+                    },
+                    tl: {
+                      hd: {
+                        TAG: /* NumberC */0,
+                        _0: 4
+                      },
+                      tl: {
+                        hd: {
+                          TAG: /* NumberC */0,
+                          _0: 4
+                        },
+                        tl: /* [] */0
+                      }
+                    }
+                  }
+                },
+                tl: /* [] */0
+              }
+            }
+          }
+        }), {
+      TAG: /* OrE */4,
+      _0: {
+        TAG: /* BoolE */1,
+        _0: true
+      },
+      _1: {
+        TAG: /* ApplicationE */9,
+        _0: {
+          hd: {
+            TAG: /* NameE */2,
+            _0: /* Name */{
+              _0: "="
+            }
+          },
+          tl: {
+            hd: {
+              TAG: /* NumE */0,
+              _0: 4
+            },
+            tl: {
+              hd: {
+                TAG: /* NumE */0,
+                _0: 4
+              },
+              tl: /* [] */0
+            }
+          }
+        }
+      }
+    }, "parseExpression - or statement");
+
+CS17SetupRackette$Rackette.checkExpectExpression(Rackette$Rackette.parseExpression({
+          TAG: /* ListC */2,
+          _0: {
+            hd: {
+              TAG: /* SymbolC */1,
+              _0: "if"
+            },
+            tl: {
+              hd: {
+                TAG: /* SymbolC */1,
+                _0: "true"
+              },
+              tl: {
+                hd: {
+                  TAG: /* NumberC */0,
+                  _0: 7
+                },
+                tl: {
+                  hd: {
+                    TAG: /* ListC */2,
+                    _0: {
+                      hd: {
+                        TAG: /* SymbolC */1,
+                        _0: "+"
+                      },
+                      tl: {
+                        hd: {
+                          TAG: /* NumberC */0,
+                          _0: 4
+                        },
+                        tl: {
+                          hd: {
+                            TAG: /* NumberC */0,
+                            _0: 18
+                          },
+                          tl: /* [] */0
+                        }
+                      }
+                    }
+                  },
+                  tl: /* [] */0
+                }
+              }
+            }
+          }
+        }), {
+      TAG: /* IfE */5,
+      _0: {
+        boolExpr: {
+          TAG: /* BoolE */1,
+          _0: true
+        },
+        trueExpr: {
+          TAG: /* NumE */0,
+          _0: 7
+        },
+        falseExpr: {
+          TAG: /* ApplicationE */9,
+          _0: {
+            hd: {
+              TAG: /* NameE */2,
+              _0: /* Name */{
+                _0: "+"
+              }
+            },
+            tl: {
+              hd: {
+                TAG: /* NumE */0,
+                _0: 4
+              },
+              tl: {
+                hd: {
+                  TAG: /* NumE */0,
+                  _0: 18
+                },
+                tl: /* [] */0
+              }
+            }
+          }
+        }
+      }
+    }, "parseExpression - if statement");
+
+CS17SetupRackette$Rackette.checkExpectExpression(Rackette$Rackette.parseExpression({
+          TAG: /* ListC */2,
+          _0: {
+            hd: {
+              TAG: /* SymbolC */1,
+              _0: "cond"
+            },
+            tl: {
+              hd: {
+                TAG: /* ListC */2,
+                _0: {
+                  hd: {
+                    TAG: /* SymbolC */1,
+                    _0: "true"
+                  },
+                  tl: {
+                    hd: {
+                      TAG: /* NumberC */0,
+                      _0: 1
+                    },
+                    tl: /* [] */0
+                  }
+                }
+              },
+              tl: {
+                hd: {
+                  TAG: /* ListC */2,
+                  _0: {
+                    hd: {
+                      TAG: /* ListC */2,
+                      _0: {
+                        hd: {
+                          TAG: /* SymbolC */1,
+                          _0: "="
+                        },
+                        tl: {
+                          hd: {
+                            TAG: /* NumberC */0,
+                            _0: 4
+                          },
+                          tl: {
+                            hd: {
+                              TAG: /* NumberC */0,
+                              _0: 4
+                            },
+                            tl: /* [] */0
+                          }
+                        }
+                      }
+                    },
+                    tl: {
+                      hd: {
+                        TAG: /* NumberC */0,
+                        _0: 2
+                      },
+                      tl: /* [] */0
+                    }
+                  }
+                },
+                tl: /* [] */0
+              }
+            }
+          }
+        }), {
+      TAG: /* CondE */6,
+      _0: {
+        hd: {
+          conditionExpr: {
+            TAG: /* BoolE */1,
+            _0: true
+          },
+          resultExpr: {
+            TAG: /* NumE */0,
+            _0: 1
+          }
+        },
+        tl: {
+          hd: {
+            conditionExpr: {
+              TAG: /* ApplicationE */9,
+              _0: {
+                hd: {
+                  TAG: /* NameE */2,
+                  _0: /* Name */{
+                    _0: "="
+                  }
+                },
+                tl: {
+                  hd: {
+                    TAG: /* NumE */0,
+                    _0: 4
+                  },
+                  tl: {
+                    hd: {
+                      TAG: /* NumE */0,
+                      _0: 4
+                    },
+                    tl: /* [] */0
+                  }
+                }
+              }
+            },
+            resultExpr: {
+              TAG: /* NumE */0,
+              _0: 2
+            }
+          },
+          tl: /* [] */0
+        }
+      }
+    }, "parseExpression - cond statement");
+
+CS17SetupRackette$Rackette.checkExpectExpression(Rackette$Rackette.parseExpression({
+          TAG: /* ListC */2,
+          _0: {
+            hd: {
+              TAG: /* SymbolC */1,
+              _0: "lambda"
+            },
+            tl: {
+              hd: {
+                TAG: /* ListC */2,
+                _0: {
+                  hd: {
+                    TAG: /* SymbolC */1,
+                    _0: "x"
+                  },
+                  tl: {
+                    hd: {
+                      TAG: /* SymbolC */1,
+                      _0: "y"
+                    },
+                    tl: /* [] */0
+                  }
+                }
+              },
+              tl: {
+                hd: {
+                  TAG: /* ListC */2,
+                  _0: {
+                    hd: {
+                      TAG: /* SymbolC */1,
+                      _0: "+"
+                    },
+                    tl: {
+                      hd: {
+                        TAG: /* SymbolC */1,
+                        _0: "x"
+                      },
+                      tl: {
+                        hd: {
+                          TAG: /* SymbolC */1,
+                          _0: "y"
+                        },
+                        tl: /* [] */0
+                      }
+                    }
+                  }
+                },
+                tl: /* [] */0
+              }
+            }
+          }
+        }), {
+      TAG: /* LambdaE */7,
+      _0: {
+        nameList: {
+          hd: /* Name */{
+            _0: "x"
+          },
+          tl: {
+            hd: /* Name */{
+              _0: "y"
+            },
+            tl: /* [] */0
+          }
+        },
+        lambdaBody: {
+          TAG: /* ApplicationE */9,
+          _0: {
+            hd: {
+              TAG: /* NameE */2,
+              _0: /* Name */{
+                _0: "+"
+              }
+            },
+            tl: {
+              hd: {
+                TAG: /* NameE */2,
+                _0: /* Name */{
+                  _0: "x"
+                }
+              },
+              tl: {
+                hd: {
+                  TAG: /* NameE */2,
+                  _0: /* Name */{
+                    _0: "y"
+                  }
+                },
+                tl: /* [] */0
+              }
+            }
+          }
+        }
+      }
+    }, "parseExpression - lambda statement");
+
+CS17SetupRackette$Rackette.checkExpectExpression(Rackette$Rackette.parseExpression({
+          TAG: /* ListC */2,
+          _0: {
+            hd: {
+              TAG: /* SymbolC */1,
+              _0: "let"
+            },
+            tl: {
+              hd: {
+                TAG: /* ListC */2,
+                _0: {
+                  hd: {
+                    TAG: /* ListC */2,
+                    _0: {
+                      hd: {
+                        TAG: /* SymbolC */1,
+                        _0: "x"
+                      },
+                      tl: {
+                        hd: {
+                          TAG: /* NumberC */0,
+                          _0: 5
+                        },
+                        tl: /* [] */0
+                      }
+                    }
+                  },
+                  tl: {
+                    hd: {
+                      TAG: /* ListC */2,
+                      _0: {
+                        hd: {
+                          TAG: /* SymbolC */1,
+                          _0: "y"
+                        },
+                        tl: {
+                          hd: {
+                            TAG: /* NumberC */0,
+                            _0: 4
+                          },
+                          tl: /* [] */0
+                        }
+                      }
+                    },
+                    tl: /* [] */0
+                  }
+                }
+              },
+              tl: {
+                hd: {
+                  TAG: /* ListC */2,
+                  _0: {
+                    hd: {
+                      TAG: /* SymbolC */1,
+                      _0: "-"
+                    },
+                    tl: {
+                      hd: {
+                        TAG: /* SymbolC */1,
+                        _0: "x"
+                      },
+                      tl: {
+                        hd: {
+                          TAG: /* SymbolC */1,
+                          _0: "y"
+                        },
+                        tl: /* [] */0
+                      }
+                    }
+                  }
+                },
+                tl: /* [] */0
+              }
+            }
+          }
+        }), {
+      TAG: /* LetE */8,
+      _0: {
+        letPairs: {
+          hd: {
+            pairName: /* Name */{
+              _0: "x"
+            },
+            pairExpr: {
+              TAG: /* NumE */0,
+              _0: 5
+            }
+          },
+          tl: {
+            hd: {
+              pairName: /* Name */{
+                _0: "y"
+              },
+              pairExpr: {
+                TAG: /* NumE */0,
+                _0: 4
+              }
+            },
+            tl: /* [] */0
+          }
+        },
+        letBody: {
+          TAG: /* ApplicationE */9,
+          _0: {
+            hd: {
+              TAG: /* NameE */2,
+              _0: /* Name */{
+                _0: "-"
+              }
+            },
+            tl: {
+              hd: {
+                TAG: /* NameE */2,
+                _0: /* Name */{
+                  _0: "x"
+                }
+              },
+              tl: {
+                hd: {
+                  TAG: /* NameE */2,
+                  _0: /* Name */{
+                    _0: "y"
+                  }
+                },
+                tl: /* [] */0
+              }
+            }
+          }
+        }
+      }
+    }, "parseExpression - let statement");
+
+CS17SetupRackette$Rackette.checkExpectAbstractProgramPiece(Rackette$Rackette.parsePiece({
+          TAG: /* SymbolC */1,
+          _0: "empty"
+        }), {
+      TAG: /* Expression */1,
+      _0: /* EmptyE */0
+    }, "parsePiece - empty");
 
 /*  Not a pure module */
