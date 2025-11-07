@@ -1217,9 +1217,10 @@ function handleCond(tle, env, _myCondDatas) {
   };
 }
 
-function $$eval(tle, env, _expr) {
+function $$eval(tle, _env, _expr) {
   while(true) {
     var expr = _expr;
+    var env = _env;
     if (typeof expr === "number") {
       return {
               TAG: /* ListV */2,
@@ -1274,16 +1275,45 @@ function $$eval(tle, env, _expr) {
       case /* CondE */6 :
           _expr = handleCond(tle, env, expr._0);
           continue ;
-      default:
-        throw {
-              RE_EXN_ID: "Match_failure",
-              _1: [
-                "Rackette.re",
-                348,
-                22
-              ],
-              Error: new Error()
-            };
+      case /* LambdaE */7 :
+          var match$6 = expr._0;
+          return {
+                  TAG: /* ClosureV */4,
+                  _0: {
+                    cNameList: match$6.nameList,
+                    cExpr: match$6.lambdaBody,
+                    cEnv: env
+                  }
+                };
+      case /* LetE */8 :
+          var match$7 = expr._0;
+          _expr = match$7.letBody;
+          _env = {
+            hd: List.map((function(env){
+                return function (myLetPair) {
+                  return [
+                          /* Name */{
+                            _0: myLetPair.pairName._0
+                          },
+                          $$eval(tle, env, myLetPair.pairExpr)
+                        ];
+                }
+                }(env)), match$7.letPairs),
+            tl: env
+          };
+          continue ;
+      case /* NameE */2 :
+      case /* ApplicationE */9 :
+          throw {
+                RE_EXN_ID: "Match_failure",
+                _1: [
+                  "Rackette.re",
+                  353,
+                  4
+                ],
+                Error: new Error()
+              };
+      
     }
   };
 }
@@ -1314,7 +1344,7 @@ function inEnviorment(_env, myName) {
           RE_EXN_ID: "Match_failure",
           _1: [
             "Rackette.re",
-            379,
+            411,
             4
           ],
           Error: new Error()
@@ -1349,7 +1379,7 @@ function addDefinition(env, param) {
         RE_EXN_ID: "Match_failure",
         _1: [
           "Rackette.re",
-          393,
+          425,
           11
         ],
         Error: new Error()

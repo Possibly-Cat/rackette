@@ -322,7 +322,8 @@ let parseDefinition: concreteProgramPiece => definition =
 let parsePiece: concreteProgramPiece => abstractProgramPiece =
   input =>
     switch (input) {
-    | ListC([SymbolC("define"), ..._]) => Definition(parseDefinition(input))
+    | ListC([SymbolC("define"), ..._]) =>
+      Definition(parseDefinition(input))
     | _ => Expression(parseExpression(input))
     };
 
@@ -336,38 +337,7 @@ let parse: concreteProgram => abstractProgram =
 
 /* TODO: write the header comment parts required by the Design Recipe
  * and implement eval */
-let rec handleCond: (environment, environment, list(condData)) => expression = (tle, env, myCondDatas) => switch(myCondDatas){
-  | [] => failwith("no conditions evaluated to true in a cond statement");
-  | [{conditionExpr: condition, resultExpr: result}, ...tl] => switch(eval(tle, env, condition)){
-    | BoolV(true) => result
-    | BoolV(false) => handleCond(tle, env, tl)
-    | _ => failwith("non-bool as condition in a cond statement")
-  }
-}
-and eval: (environment, environment, expression) => value =
-  (tle, env, expr) => switch(expr){
-    | NumE(myNum) => NumV(myNum)
-    | BoolE(myBool) => BoolV(myBool)
-    | EmptyE => ListV([])
-    // | NameE(Name(myName)) => findNameInDefinition(myName)
-    | AndE(expr1, expr2) => switch((eval(tle, env, expr1), eval(tle, env, expr2))){
-      | (BoolV(aBool1), BoolV(aBool2)) => BoolV(aBool1 && aBool2)
-      | _ => failwith("non booleans in an and statement")
-    }
-    | OrE(expr1, expr2) => switch((eval(tle, env, expr1), eval(tle, env, expr2))){
-      | (BoolV(aBool1), BoolV(aBool2)) => BoolV(aBool1 || aBool2)
-      | _ => failwith("non booleans in an or statement")
-    }
-    | IfE({boolExpr: expr1, trueExpr: expr2, falseExpr: expr3}) => switch(eval(tle, env, expr1)){
-      | BoolV(true) => eval(tle, env, expr2)
-      | BoolV(false) => eval(tle, env, expr3)
-      | _ => failwith("non booleans as first argument in an if statement")
-    }
-    | CondE(myCondDatas) => eval(tle, env, handleCond(tle, env, myCondDatas))
-    }
-    
-
-let rec inBindingList: (bindingList, name) => bool =
+ let rec inBindingList: (bindingList, name) => bool =
   (alob, myName) =>
     switch (alob) {
     | [] => false
@@ -385,6 +355,76 @@ let rec inEnviorment: (environment, name) => bool =
         inEnviorment(tl, myName);
       }
     };
+
+let rec getFromBindingList: (bindingList, string) => value = (alob, myName) => switch(alob){
+  | [(Name(myName), someValue), ..._tl] => someValue
+  | [_hd, ...tl] => getFromBindingList(tl, myName)
+}
+
+let rec findVarInEnvironment: (environment, string) => value = (env, myName) => switch(env){
+  | [[]] => failwith("variable used before definition")
+  | [firstBindingList, ...tl] => if(inBindingList(firstBindingList, Name(myName))) {getFromBindingList(firstBindingList, myName)} else {findVarInEnvironment([tl], myName)}
+}
+let rec handleCond: (environment, environment, list(condData)) => expression =
+  (tle, env, myCondDatas) =>
+    switch (myCondDatas) {
+    | [] => failwith("no conditions evaluated to true in a cond statement")
+    | [{conditionExpr: condition, resultExpr: result}, ...tl] =>
+      switch (eval(tle, env, condition)) {
+      | BoolV(true) => result
+      | BoolV(false) => handleCond(tle, env, tl)
+      | _ => failwith("non-bool as condition in a cond statement")
+      }
+    }
+and eval: (environment, environment, expression) => value =
+  (tle, env, expr) =>
+    switch (expr) {
+    | NumE(myNum) => NumV(myNum)
+    | BoolE(myBool) => BoolV(myBool)
+    | EmptyE => ListV([])
+    | NameE(Name(myName)) => findVarInEnvirenment(env, myName)
+    | AndE(expr1, expr2) =>
+      switch (eval(tle, env, expr1), eval(tle, env, expr2)) {
+      | (BoolV(aBool1), BoolV(aBool2)) => BoolV(aBool1 && aBool2)
+      | _ => failwith("non booleans in an and statement")
+      }
+    | OrE(expr1, expr2) =>
+      switch (eval(tle, env, expr1), eval(tle, env, expr2)) {
+      | (BoolV(aBool1), BoolV(aBool2)) => BoolV(aBool1 || aBool2)
+      | _ => failwith("non booleans in an or statement")
+      }
+    | IfE({boolExpr: expr1, trueExpr: expr2, falseExpr: expr3}) =>
+      switch (eval(tle, env, expr1)) {
+      | BoolV(true) => eval(tle, env, expr2)
+      | BoolV(false) => eval(tle, env, expr3)
+      | _ => failwith("non booleans as first argument in an if statement")
+      }
+    | CondE(myCondDatas) =>
+      eval(tle, env, handleCond(tle, env, myCondDatas))
+    | LambdaE({nameList: myNames, lambdaBody: body}) =>
+      ClosureV({cNameList: myNames, cExpr: body, cEnv: env})
+    | LetE({letPairs: listOfLetPairs, letBody: body}) =>
+      eval(
+        tle,
+        [
+          List.map(
+            myLetPair =>
+              switch (myLetPair) { //This whole switch just sends a letPair to 
+              | {pairName: Name(myName), pairExpr: expr} => (// an equivalent
+                  Name(myName), // binding
+                  eval(tle, env, expr),
+                )
+              },
+            listOfLetPairs,
+          ),
+          ...env,
+        ],
+        body,
+      )
+    // | ApplicationE([NameE(Name(someFunction)), ...args]) =>
+    };
+
+
 /* TODO: write the header comment parts required by the Design Recipe */
 let rec addDefinition: (environment, (name, expression)) => environment =
   (env, (id, expr)) =>
