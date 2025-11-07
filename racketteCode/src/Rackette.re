@@ -337,7 +337,7 @@ let parse: concreteProgram => abstractProgram =
 
 /* TODO: write the header comment parts required by the Design Recipe
  * and implement eval */
- let rec inBindingList: (bindingList, name) => bool =
+let rec inBindingList: (bindingList, name) => bool =
   (alob, myName) =>
     switch (alob) {
     | [] => false
@@ -356,15 +356,24 @@ let rec inEnviorment: (environment, name) => bool =
       }
     };
 
-let rec getFromBindingList: (bindingList, string) => value = (alob, myName) => switch(alob){
-  | [(Name(myName), someValue), ..._tl] => someValue
-  | [_hd, ...tl] => getFromBindingList(tl, myName)
-}
+let rec getFromBindingList: (bindingList, string) => value =
+  (alob, myName) =>
+    switch (alob) {
+    | [(Name(myName), someValue), ..._tl] => someValue
+    | [_hd, ...tl] => getFromBindingList(tl, myName)
+    };
 
-let rec findVarInEnvironment: (environment, string) => value = (env, myName) => switch(env){
-  | [[]] => failwith("variable used before definition")
-  | [firstBindingList, ...tl] => if(inBindingList(firstBindingList, Name(myName))) {getFromBindingList(firstBindingList, myName)} else {findVarInEnvironment([tl], myName)}
-}
+let rec findVarInEnvironment: (environment, string) => value =
+  (env, myName) =>
+    switch (env) {
+    | [[]] => failwith("variable used before definition")
+    | [firstBindingList, ...tl] =>
+      if (inBindingList(firstBindingList, Name(myName))) {
+        getFromBindingList(firstBindingList, myName);
+      } else {
+        findVarInEnvironment([tl], myName);
+      }
+    };
 let rec handleCond: (environment, environment, list(condData)) => expression =
   (tle, env, myCondDatas) =>
     switch (myCondDatas) {
@@ -409,8 +418,10 @@ and eval: (environment, environment, expression) => value =
         [
           List.map(
             myLetPair =>
-              switch (myLetPair) { //This whole switch just sends a letPair to 
-              | {pairName: Name(myName), pairExpr: expr} => (// an equivalent
+              switch (myLetPair) {
+              //This whole switch just sends a letPair to
+              | {pairName: Name(myName), pairExpr: expr} => (
+                  // an equivalent
                   Name(myName), // binding
                   eval(tle, env, expr),
                 )
@@ -423,7 +434,6 @@ and eval: (environment, environment, expression) => value =
       )
     // | ApplicationE([NameE(Name(someFunction)), ...args]) =>
     };
-
 
 /* TODO: write the header comment parts required by the Design Recipe */
 let rec addDefinition: (environment, (name, expression)) => environment =
