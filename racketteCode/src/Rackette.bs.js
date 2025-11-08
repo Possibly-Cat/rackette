@@ -1449,7 +1449,12 @@ function stringOfValue(aValue) {
           return "#f";
         }
     case /* ListV */2 :
-        return "'(" + ($$String.concat(" ", List.map(stringOfValue, aValue._0)) + ")");
+        var values = aValue._0;
+        if (values) {
+          return "[" + ($$String.concat(",", List.map(stringOfValue, values)) + "]");
+        } else {
+          return "empty";
+        }
     case /* BuiltinV */3 :
         return aValue._0.printedRep;
     case /* ClosureV */4 :

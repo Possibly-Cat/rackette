@@ -674,8 +674,9 @@ let rec stringOfValue: value => string =
     | NumV(n) => string_of_int(n)
     | BoolV(true) => "#t"
     | BoolV(false) => "#f"
+    | ListV([]) => "empty"
     | ListV(values) =>
-      "'(" ++ String.concat(" ", List.map(stringOfValue, values)) ++ ")"
+      "[" ++ String.concat(",", List.map(stringOfValue, values)) ++ "]"
     | BuiltinV({printedRep}) => printedRep
     | ClosureV(_) => "#<procedure>"
     };

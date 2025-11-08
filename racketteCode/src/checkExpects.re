@@ -163,8 +163,274 @@ checkExpectExpression(
   }),
   "parseExpression - let statement",
 );
+
+checkExpectDefinition(
+  parseDefinition(ListC([SymbolC("define"), SymbolC("x"), NumberC(5)])),
+  (Name("x"), NumE(5)),
+  "parseDefinition  - var to number",
+);
+checkExpectDefinition(
+  parseDefinition(
+    ListC([
+      SymbolC("define"),
+      SymbolC("addOne"),
+      ListC([
+        SymbolC("lambda"),
+        ListC([SymbolC("x")]),
+        ListC([SymbolC("+"), SymbolC("x"), NumberC(1)]),
+      ]),
+    ]),
+  ),
+  (
+    Name("addOne"),
+    LambdaE({
+      nameList: [Name("x")],
+      lambdaBody:
+        ApplicationE([NameE(Name("+")), NameE(Name("x")), NumE(1)]),
+    }),
+  ),
+  "parseDefinition - function with lambda",
+);
+checkExpectAbstractProgramPiece(
+  parsePiece(NumberC(1)),
+  Expression(NumE(1)),
+  "parsePiece - single number",
+);
 checkExpectAbstractProgramPiece(
   parsePiece(SymbolC("empty")),
   Expression(EmptyE),
   "parsePiece - empty",
+);
+checkExpectAbstractProgramPiece(
+  parsePiece(ListC([SymbolC("+"), NumberC(2), NumberC(5)])),
+  Expression(ApplicationE([NameE(Name("+")), NumE(2), NumE(5)])),
+  "parsePiece - procedure application expression",
+);
+checkExpectAbstractProgramPiece(
+  parsePiece(ListC([SymbolC("define"), SymbolC("x"), NumberC(5)])),
+  Definition((Name("x"), NumE(5))),
+  "parsePiece - definition",
+);
+checkExpectAbstractProgram(
+  parse([NumberC(5), NumberC(4)]),
+  [Expression(NumE(5)), Expression(NumE(4))],
+  "parse - two nums",
+);
+checkExpectAbstractProgram(
+  parse([
+    ListC([SymbolC("define"), SymbolC("x"), NumberC(5)]),
+    SymbolC("x"),
+  ]),
+  [Definition((Name("x"), NumE(5))), Expression(NameE(Name("x")))],
+  "parse - definition and variable call",
+);
+//Handle cond check relegated to check of eval which regards cond
+//Eval and addDefinition checks relegated to process which is essentially just a
+//  container for the two
+checkExpect(
+  process([Expression(NumE(5))]),
+  [NumV(5)],
+  "process - single number",
+);
+checkExpect(
+  process([
+    Expression(ApplicationE([NameE(Name("+")), NumE(5), NumE(12)])),
+  ]),
+  [NumV(17)],
+  "process - addition builtin",
+);
+checkExpect(
+  process([
+    Definition((
+      Name("addOne"),
+      LambdaE({
+        nameList: [Name("x")],
+        lambdaBody:
+          ApplicationE([NameE(Name("+")), NameE(Name("x")), NumE(1)]),
+      }),
+    )),
+    Expression(ApplicationE([NameE(Name("addOne")), NumE(5)])),
+  ]),
+  [NumV(6)],
+  "process - user defined expression definition and application",
+);
+checkExpect(
+  process([
+    Definition((Name("x"), NumE(23))),
+    Expression(NameE(Name("x"))),
+  ]),
+  [NumV(23)],
+  "process - variable definition and use",
+);
+checkExpect(
+  process([Expression(BoolE(true))]),
+  [BoolV(true)],
+  "process - true",
+);
+checkExpect(
+  process([Expression(BoolE(false))]),
+  [BoolV(false)],
+  "process - false",
+);
+checkExpect(
+  process([Expression(EmptyE)]),
+  [ListV([])],
+  "process - empty",
+);
+checkExpect(
+  process([Expression(AndE(BoolE(true), BoolE(true)))]),
+  [BoolV(true)],
+  "process - and with two trues",
+);
+checkExpect(
+  process([Expression(AndE(BoolE(true), BoolE(false)))]),
+  [BoolV(false)],
+  "process - and with one true - 1",
+);
+checkExpect(
+  process([Expression(AndE(BoolE(false), BoolE(true)))]),
+  [BoolV(false)],
+  "process - and with one true - 2",
+);
+checkExpect(
+  process([Expression(AndE(BoolE(false), BoolE(false)))]),
+  [BoolV(false)],
+  "process - and with two falses",
+);
+checkExpect(
+  process([Expression(OrE(BoolE(true), BoolE(true)))]),
+  [BoolV(true)],
+  "process - or with two trues",
+);
+checkExpect(
+  process([Expression(OrE(BoolE(true), BoolE(false)))]),
+  [BoolV(true)],
+  "process - or with one true - 1",
+);
+checkExpect(
+  process([Expression(OrE(BoolE(false), BoolE(true)))]),
+  [BoolV(true)],
+  "process - or with one true - 2",
+);
+checkExpect(
+  process([Expression(OrE(BoolE(false), BoolE(false)))]),
+  [BoolV(false)],
+  "process - or with two falses",
+);
+checkExpect(
+  process([
+    Expression(
+      IfE({boolExpr: BoolE(true), trueExpr: NumE(1), falseExpr: NumE(-1)}),
+    ),
+  ]),
+  [NumV(1)],
+  "process - if with true",
+);
+checkExpect(
+  process([
+    Expression(
+      IfE({
+        boolExpr: BoolE(false),
+        trueExpr: NumE(1),
+        falseExpr: NumE(-1),
+      }),
+    ),
+  ]),
+  [NumV(-1)],
+  "process - if with false",
+);
+checkExpect(
+  process([
+    Expression(
+      CondE([
+        {conditionExpr: BoolE(false), resultExpr: NumE(0)},
+        {conditionExpr: BoolE(true), resultExpr: NumE(1)},
+      ]),
+    ),
+  ]),
+  [NumV(1)],
+  "prcoess - cond 1",
+);
+checkExpect(
+  process([
+    Expression(
+      CondE([
+        {conditionExpr: BoolE(true), resultExpr: NumE(0)},
+        {conditionExpr: BoolE(true), resultExpr: NumE(1)},
+      ]),
+    ),
+  ]),
+  [NumV(0)],
+  "prcoess - cond 2",
+);
+checkExpect(
+  process([
+    Expression(
+      LambdaE({
+        nameList: [Name("x"), Name("y")],
+        lambdaBody:
+          ApplicationE([
+            NameE(Name("-")),
+            NameE(Name("x")),
+            NameE(Name("y")),
+          ]),
+      }),
+    ),
+  ]),
+  [
+    ClosureV({
+      cNameList: [Name("x"), Name("y")],
+      cExpr:
+        ApplicationE([
+          NameE(Name("-")),
+          NameE(Name("x")),
+          NameE(Name("y")),
+        ]),
+      cEnv: [],
+    }),
+  ],
+  "process - lambda",
+);
+checkExpect(
+  process([
+    Expression(
+      LetE({
+        letPairs: [
+          {pairName: Name("x"), pairExpr: NumE(10)},
+          {pairName: Name("y"), pairExpr: NumE(2)},
+        ],
+        letBody:
+          ApplicationE([
+            NameE(Name("*")),
+            NameE(Name("x")),
+            NameE(Name("y")),
+          ]),
+      }),
+    ),
+  ]),
+  [NumV(20)],
+  "process - let",
+) /*applicationE has been suficiently tested through other check expect, I do not alot it its own*/;
+checkExpect(stringOfValue(NumV(4)), "4", "stringOfValue - single number");
+checkExpect(stringOfValue(BoolV(true)), "#t", "stringOfValue - true");
+checkExpect(stringOfValue(BoolV(false)), "#f", "stringOfValue - false");
+checkExpect(
+  stringOfValue(ListV([NumV(1), NumV(2), NumV(3)])),
+  "[1,2,3]",
+  "stringOfValue - list",
+);
+checkExpect(
+  stringOfValue(ListV([])),
+  "empty",
+  "stringOfValue - empty list",
+);
+checkExpect(
+  stringOfValue(
+    BuiltinV({
+      printedRep: "myPrint",
+      bProc: _thisIsAPlaceholder => BoolV(true),
+    }),
+  ),
+  "myPrint",
+  "StringOfValue - builtIn",
 );

@@ -759,6 +759,154 @@ CS17SetupRackette$Rackette.checkExpectExpression(Rackette$Rackette.parseExpressi
       }
     }, "parseExpression - let statement");
 
+CS17SetupRackette$Rackette.checkExpectDefinition(Rackette$Rackette.parseDefinition({
+          TAG: /* ListC */2,
+          _0: {
+            hd: {
+              TAG: /* SymbolC */1,
+              _0: "define"
+            },
+            tl: {
+              hd: {
+                TAG: /* SymbolC */1,
+                _0: "x"
+              },
+              tl: {
+                hd: {
+                  TAG: /* NumberC */0,
+                  _0: 5
+                },
+                tl: /* [] */0
+              }
+            }
+          }
+        }), [
+      /* Name */{
+        _0: "x"
+      },
+      {
+        TAG: /* NumE */0,
+        _0: 5
+      }
+    ], "parseDefinition  - var to number");
+
+CS17SetupRackette$Rackette.checkExpectDefinition(Rackette$Rackette.parseDefinition({
+          TAG: /* ListC */2,
+          _0: {
+            hd: {
+              TAG: /* SymbolC */1,
+              _0: "define"
+            },
+            tl: {
+              hd: {
+                TAG: /* SymbolC */1,
+                _0: "addOne"
+              },
+              tl: {
+                hd: {
+                  TAG: /* ListC */2,
+                  _0: {
+                    hd: {
+                      TAG: /* SymbolC */1,
+                      _0: "lambda"
+                    },
+                    tl: {
+                      hd: {
+                        TAG: /* ListC */2,
+                        _0: {
+                          hd: {
+                            TAG: /* SymbolC */1,
+                            _0: "x"
+                          },
+                          tl: /* [] */0
+                        }
+                      },
+                      tl: {
+                        hd: {
+                          TAG: /* ListC */2,
+                          _0: {
+                            hd: {
+                              TAG: /* SymbolC */1,
+                              _0: "+"
+                            },
+                            tl: {
+                              hd: {
+                                TAG: /* SymbolC */1,
+                                _0: "x"
+                              },
+                              tl: {
+                                hd: {
+                                  TAG: /* NumberC */0,
+                                  _0: 1
+                                },
+                                tl: /* [] */0
+                              }
+                            }
+                          }
+                        },
+                        tl: /* [] */0
+                      }
+                    }
+                  }
+                },
+                tl: /* [] */0
+              }
+            }
+          }
+        }), [
+      /* Name */{
+        _0: "addOne"
+      },
+      {
+        TAG: /* LambdaE */7,
+        _0: {
+          nameList: {
+            hd: /* Name */{
+              _0: "x"
+            },
+            tl: /* [] */0
+          },
+          lambdaBody: {
+            TAG: /* ApplicationE */9,
+            _0: {
+              hd: {
+                TAG: /* NameE */2,
+                _0: /* Name */{
+                  _0: "+"
+                }
+              },
+              tl: {
+                hd: {
+                  TAG: /* NameE */2,
+                  _0: /* Name */{
+                    _0: "x"
+                  }
+                },
+                tl: {
+                  hd: {
+                    TAG: /* NumE */0,
+                    _0: 1
+                  },
+                  tl: /* [] */0
+                }
+              }
+            }
+          }
+        }
+      }
+    ], "parseDefinition - function with lambda");
+
+CS17SetupRackette$Rackette.checkExpectAbstractProgramPiece(Rackette$Rackette.parsePiece({
+          TAG: /* NumberC */0,
+          _0: 1
+        }), {
+      TAG: /* Expression */1,
+      _0: {
+        TAG: /* NumE */0,
+        _0: 1
+      }
+    }, "parsePiece - single number");
+
 CS17SetupRackette$Rackette.checkExpectAbstractProgramPiece(Rackette$Rackette.parsePiece({
           TAG: /* SymbolC */1,
           _0: "empty"
@@ -766,5 +914,947 @@ CS17SetupRackette$Rackette.checkExpectAbstractProgramPiece(Rackette$Rackette.par
       TAG: /* Expression */1,
       _0: /* EmptyE */0
     }, "parsePiece - empty");
+
+CS17SetupRackette$Rackette.checkExpectAbstractProgramPiece(Rackette$Rackette.parsePiece({
+          TAG: /* ListC */2,
+          _0: {
+            hd: {
+              TAG: /* SymbolC */1,
+              _0: "+"
+            },
+            tl: {
+              hd: {
+                TAG: /* NumberC */0,
+                _0: 2
+              },
+              tl: {
+                hd: {
+                  TAG: /* NumberC */0,
+                  _0: 5
+                },
+                tl: /* [] */0
+              }
+            }
+          }
+        }), {
+      TAG: /* Expression */1,
+      _0: {
+        TAG: /* ApplicationE */9,
+        _0: {
+          hd: {
+            TAG: /* NameE */2,
+            _0: /* Name */{
+              _0: "+"
+            }
+          },
+          tl: {
+            hd: {
+              TAG: /* NumE */0,
+              _0: 2
+            },
+            tl: {
+              hd: {
+                TAG: /* NumE */0,
+                _0: 5
+              },
+              tl: /* [] */0
+            }
+          }
+        }
+      }
+    }, "parsePiece - procedure application expression");
+
+CS17SetupRackette$Rackette.checkExpectAbstractProgramPiece(Rackette$Rackette.parsePiece({
+          TAG: /* ListC */2,
+          _0: {
+            hd: {
+              TAG: /* SymbolC */1,
+              _0: "define"
+            },
+            tl: {
+              hd: {
+                TAG: /* SymbolC */1,
+                _0: "x"
+              },
+              tl: {
+                hd: {
+                  TAG: /* NumberC */0,
+                  _0: 5
+                },
+                tl: /* [] */0
+              }
+            }
+          }
+        }), {
+      TAG: /* Definition */0,
+      _0: [
+        /* Name */{
+          _0: "x"
+        },
+        {
+          TAG: /* NumE */0,
+          _0: 5
+        }
+      ]
+    }, "parsePiece - definition");
+
+CS17SetupRackette$Rackette.checkExpectAbstractProgram(Rackette$Rackette.parse({
+          hd: {
+            TAG: /* NumberC */0,
+            _0: 5
+          },
+          tl: {
+            hd: {
+              TAG: /* NumberC */0,
+              _0: 4
+            },
+            tl: /* [] */0
+          }
+        }), {
+      hd: {
+        TAG: /* Expression */1,
+        _0: {
+          TAG: /* NumE */0,
+          _0: 5
+        }
+      },
+      tl: {
+        hd: {
+          TAG: /* Expression */1,
+          _0: {
+            TAG: /* NumE */0,
+            _0: 4
+          }
+        },
+        tl: /* [] */0
+      }
+    }, "parse - two nums");
+
+CS17SetupRackette$Rackette.checkExpectAbstractProgram(Rackette$Rackette.parse({
+          hd: {
+            TAG: /* ListC */2,
+            _0: {
+              hd: {
+                TAG: /* SymbolC */1,
+                _0: "define"
+              },
+              tl: {
+                hd: {
+                  TAG: /* SymbolC */1,
+                  _0: "x"
+                },
+                tl: {
+                  hd: {
+                    TAG: /* NumberC */0,
+                    _0: 5
+                  },
+                  tl: /* [] */0
+                }
+              }
+            }
+          },
+          tl: {
+            hd: {
+              TAG: /* SymbolC */1,
+              _0: "x"
+            },
+            tl: /* [] */0
+          }
+        }), {
+      hd: {
+        TAG: /* Definition */0,
+        _0: [
+          /* Name */{
+            _0: "x"
+          },
+          {
+            TAG: /* NumE */0,
+            _0: 5
+          }
+        ]
+      },
+      tl: {
+        hd: {
+          TAG: /* Expression */1,
+          _0: {
+            TAG: /* NameE */2,
+            _0: /* Name */{
+              _0: "x"
+            }
+          }
+        },
+        tl: /* [] */0
+      }
+    }, "parse - definition and variable call");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.$$process({
+          hd: {
+            TAG: /* Expression */1,
+            _0: {
+              TAG: /* NumE */0,
+              _0: 5
+            }
+          },
+          tl: /* [] */0
+        }), {
+      hd: {
+        TAG: /* NumV */0,
+        _0: 5
+      },
+      tl: /* [] */0
+    }, "process - single number");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.$$process({
+          hd: {
+            TAG: /* Expression */1,
+            _0: {
+              TAG: /* ApplicationE */9,
+              _0: {
+                hd: {
+                  TAG: /* NameE */2,
+                  _0: /* Name */{
+                    _0: "+"
+                  }
+                },
+                tl: {
+                  hd: {
+                    TAG: /* NumE */0,
+                    _0: 5
+                  },
+                  tl: {
+                    hd: {
+                      TAG: /* NumE */0,
+                      _0: 12
+                    },
+                    tl: /* [] */0
+                  }
+                }
+              }
+            }
+          },
+          tl: /* [] */0
+        }), {
+      hd: {
+        TAG: /* NumV */0,
+        _0: 17
+      },
+      tl: /* [] */0
+    }, "process - addition builtin");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.$$process({
+          hd: {
+            TAG: /* Definition */0,
+            _0: [
+              /* Name */{
+                _0: "addOne"
+              },
+              {
+                TAG: /* LambdaE */7,
+                _0: {
+                  nameList: {
+                    hd: /* Name */{
+                      _0: "x"
+                    },
+                    tl: /* [] */0
+                  },
+                  lambdaBody: {
+                    TAG: /* ApplicationE */9,
+                    _0: {
+                      hd: {
+                        TAG: /* NameE */2,
+                        _0: /* Name */{
+                          _0: "+"
+                        }
+                      },
+                      tl: {
+                        hd: {
+                          TAG: /* NameE */2,
+                          _0: /* Name */{
+                            _0: "x"
+                          }
+                        },
+                        tl: {
+                          hd: {
+                            TAG: /* NumE */0,
+                            _0: 1
+                          },
+                          tl: /* [] */0
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          tl: {
+            hd: {
+              TAG: /* Expression */1,
+              _0: {
+                TAG: /* ApplicationE */9,
+                _0: {
+                  hd: {
+                    TAG: /* NameE */2,
+                    _0: /* Name */{
+                      _0: "addOne"
+                    }
+                  },
+                  tl: {
+                    hd: {
+                      TAG: /* NumE */0,
+                      _0: 5
+                    },
+                    tl: /* [] */0
+                  }
+                }
+              }
+            },
+            tl: /* [] */0
+          }
+        }), {
+      hd: {
+        TAG: /* NumV */0,
+        _0: 6
+      },
+      tl: /* [] */0
+    }, "process - user defined expression definition and application");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.$$process({
+          hd: {
+            TAG: /* Definition */0,
+            _0: [
+              /* Name */{
+                _0: "x"
+              },
+              {
+                TAG: /* NumE */0,
+                _0: 23
+              }
+            ]
+          },
+          tl: {
+            hd: {
+              TAG: /* Expression */1,
+              _0: {
+                TAG: /* NameE */2,
+                _0: /* Name */{
+                  _0: "x"
+                }
+              }
+            },
+            tl: /* [] */0
+          }
+        }), {
+      hd: {
+        TAG: /* NumV */0,
+        _0: 23
+      },
+      tl: /* [] */0
+    }, "process - variable definition and use");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.$$process({
+          hd: {
+            TAG: /* Expression */1,
+            _0: {
+              TAG: /* BoolE */1,
+              _0: true
+            }
+          },
+          tl: /* [] */0
+        }), {
+      hd: {
+        TAG: /* BoolV */1,
+        _0: true
+      },
+      tl: /* [] */0
+    }, "process - true");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.$$process({
+          hd: {
+            TAG: /* Expression */1,
+            _0: {
+              TAG: /* BoolE */1,
+              _0: false
+            }
+          },
+          tl: /* [] */0
+        }), {
+      hd: {
+        TAG: /* BoolV */1,
+        _0: false
+      },
+      tl: /* [] */0
+    }, "process - false");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.$$process({
+          hd: {
+            TAG: /* Expression */1,
+            _0: /* EmptyE */0
+          },
+          tl: /* [] */0
+        }), {
+      hd: {
+        TAG: /* ListV */2,
+        _0: /* [] */0
+      },
+      tl: /* [] */0
+    }, "process - empty");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.$$process({
+          hd: {
+            TAG: /* Expression */1,
+            _0: {
+              TAG: /* AndE */3,
+              _0: {
+                TAG: /* BoolE */1,
+                _0: true
+              },
+              _1: {
+                TAG: /* BoolE */1,
+                _0: true
+              }
+            }
+          },
+          tl: /* [] */0
+        }), {
+      hd: {
+        TAG: /* BoolV */1,
+        _0: true
+      },
+      tl: /* [] */0
+    }, "process - and with two trues");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.$$process({
+          hd: {
+            TAG: /* Expression */1,
+            _0: {
+              TAG: /* AndE */3,
+              _0: {
+                TAG: /* BoolE */1,
+                _0: true
+              },
+              _1: {
+                TAG: /* BoolE */1,
+                _0: false
+              }
+            }
+          },
+          tl: /* [] */0
+        }), {
+      hd: {
+        TAG: /* BoolV */1,
+        _0: false
+      },
+      tl: /* [] */0
+    }, "process - and with one true - 1");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.$$process({
+          hd: {
+            TAG: /* Expression */1,
+            _0: {
+              TAG: /* AndE */3,
+              _0: {
+                TAG: /* BoolE */1,
+                _0: false
+              },
+              _1: {
+                TAG: /* BoolE */1,
+                _0: true
+              }
+            }
+          },
+          tl: /* [] */0
+        }), {
+      hd: {
+        TAG: /* BoolV */1,
+        _0: false
+      },
+      tl: /* [] */0
+    }, "process - and with one true - 2");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.$$process({
+          hd: {
+            TAG: /* Expression */1,
+            _0: {
+              TAG: /* AndE */3,
+              _0: {
+                TAG: /* BoolE */1,
+                _0: false
+              },
+              _1: {
+                TAG: /* BoolE */1,
+                _0: false
+              }
+            }
+          },
+          tl: /* [] */0
+        }), {
+      hd: {
+        TAG: /* BoolV */1,
+        _0: false
+      },
+      tl: /* [] */0
+    }, "process - and with two falses");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.$$process({
+          hd: {
+            TAG: /* Expression */1,
+            _0: {
+              TAG: /* OrE */4,
+              _0: {
+                TAG: /* BoolE */1,
+                _0: true
+              },
+              _1: {
+                TAG: /* BoolE */1,
+                _0: true
+              }
+            }
+          },
+          tl: /* [] */0
+        }), {
+      hd: {
+        TAG: /* BoolV */1,
+        _0: true
+      },
+      tl: /* [] */0
+    }, "process - or with two trues");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.$$process({
+          hd: {
+            TAG: /* Expression */1,
+            _0: {
+              TAG: /* OrE */4,
+              _0: {
+                TAG: /* BoolE */1,
+                _0: true
+              },
+              _1: {
+                TAG: /* BoolE */1,
+                _0: false
+              }
+            }
+          },
+          tl: /* [] */0
+        }), {
+      hd: {
+        TAG: /* BoolV */1,
+        _0: true
+      },
+      tl: /* [] */0
+    }, "process - or with one true - 1");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.$$process({
+          hd: {
+            TAG: /* Expression */1,
+            _0: {
+              TAG: /* OrE */4,
+              _0: {
+                TAG: /* BoolE */1,
+                _0: false
+              },
+              _1: {
+                TAG: /* BoolE */1,
+                _0: true
+              }
+            }
+          },
+          tl: /* [] */0
+        }), {
+      hd: {
+        TAG: /* BoolV */1,
+        _0: true
+      },
+      tl: /* [] */0
+    }, "process - or with one true - 2");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.$$process({
+          hd: {
+            TAG: /* Expression */1,
+            _0: {
+              TAG: /* OrE */4,
+              _0: {
+                TAG: /* BoolE */1,
+                _0: false
+              },
+              _1: {
+                TAG: /* BoolE */1,
+                _0: false
+              }
+            }
+          },
+          tl: /* [] */0
+        }), {
+      hd: {
+        TAG: /* BoolV */1,
+        _0: false
+      },
+      tl: /* [] */0
+    }, "process - or with two falses");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.$$process({
+          hd: {
+            TAG: /* Expression */1,
+            _0: {
+              TAG: /* IfE */5,
+              _0: {
+                boolExpr: {
+                  TAG: /* BoolE */1,
+                  _0: true
+                },
+                trueExpr: {
+                  TAG: /* NumE */0,
+                  _0: 1
+                },
+                falseExpr: {
+                  TAG: /* NumE */0,
+                  _0: -1
+                }
+              }
+            }
+          },
+          tl: /* [] */0
+        }), {
+      hd: {
+        TAG: /* NumV */0,
+        _0: 1
+      },
+      tl: /* [] */0
+    }, "process - if with true");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.$$process({
+          hd: {
+            TAG: /* Expression */1,
+            _0: {
+              TAG: /* IfE */5,
+              _0: {
+                boolExpr: {
+                  TAG: /* BoolE */1,
+                  _0: false
+                },
+                trueExpr: {
+                  TAG: /* NumE */0,
+                  _0: 1
+                },
+                falseExpr: {
+                  TAG: /* NumE */0,
+                  _0: -1
+                }
+              }
+            }
+          },
+          tl: /* [] */0
+        }), {
+      hd: {
+        TAG: /* NumV */0,
+        _0: -1
+      },
+      tl: /* [] */0
+    }, "process - if with false");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.$$process({
+          hd: {
+            TAG: /* Expression */1,
+            _0: {
+              TAG: /* CondE */6,
+              _0: {
+                hd: {
+                  conditionExpr: {
+                    TAG: /* BoolE */1,
+                    _0: false
+                  },
+                  resultExpr: {
+                    TAG: /* NumE */0,
+                    _0: 0
+                  }
+                },
+                tl: {
+                  hd: {
+                    conditionExpr: {
+                      TAG: /* BoolE */1,
+                      _0: true
+                    },
+                    resultExpr: {
+                      TAG: /* NumE */0,
+                      _0: 1
+                    }
+                  },
+                  tl: /* [] */0
+                }
+              }
+            }
+          },
+          tl: /* [] */0
+        }), {
+      hd: {
+        TAG: /* NumV */0,
+        _0: 1
+      },
+      tl: /* [] */0
+    }, "prcoess - cond 1");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.$$process({
+          hd: {
+            TAG: /* Expression */1,
+            _0: {
+              TAG: /* CondE */6,
+              _0: {
+                hd: {
+                  conditionExpr: {
+                    TAG: /* BoolE */1,
+                    _0: true
+                  },
+                  resultExpr: {
+                    TAG: /* NumE */0,
+                    _0: 0
+                  }
+                },
+                tl: {
+                  hd: {
+                    conditionExpr: {
+                      TAG: /* BoolE */1,
+                      _0: true
+                    },
+                    resultExpr: {
+                      TAG: /* NumE */0,
+                      _0: 1
+                    }
+                  },
+                  tl: /* [] */0
+                }
+              }
+            }
+          },
+          tl: /* [] */0
+        }), {
+      hd: {
+        TAG: /* NumV */0,
+        _0: 0
+      },
+      tl: /* [] */0
+    }, "prcoess - cond 2");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.$$process({
+          hd: {
+            TAG: /* Expression */1,
+            _0: {
+              TAG: /* LambdaE */7,
+              _0: {
+                nameList: {
+                  hd: /* Name */{
+                    _0: "x"
+                  },
+                  tl: {
+                    hd: /* Name */{
+                      _0: "y"
+                    },
+                    tl: /* [] */0
+                  }
+                },
+                lambdaBody: {
+                  TAG: /* ApplicationE */9,
+                  _0: {
+                    hd: {
+                      TAG: /* NameE */2,
+                      _0: /* Name */{
+                        _0: "-"
+                      }
+                    },
+                    tl: {
+                      hd: {
+                        TAG: /* NameE */2,
+                        _0: /* Name */{
+                          _0: "x"
+                        }
+                      },
+                      tl: {
+                        hd: {
+                          TAG: /* NameE */2,
+                          _0: /* Name */{
+                            _0: "y"
+                          }
+                        },
+                        tl: /* [] */0
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          tl: /* [] */0
+        }), {
+      hd: {
+        TAG: /* ClosureV */4,
+        _0: {
+          cNameList: {
+            hd: /* Name */{
+              _0: "x"
+            },
+            tl: {
+              hd: /* Name */{
+                _0: "y"
+              },
+              tl: /* [] */0
+            }
+          },
+          cExpr: {
+            TAG: /* ApplicationE */9,
+            _0: {
+              hd: {
+                TAG: /* NameE */2,
+                _0: /* Name */{
+                  _0: "-"
+                }
+              },
+              tl: {
+                hd: {
+                  TAG: /* NameE */2,
+                  _0: /* Name */{
+                    _0: "x"
+                  }
+                },
+                tl: {
+                  hd: {
+                    TAG: /* NameE */2,
+                    _0: /* Name */{
+                      _0: "y"
+                    }
+                  },
+                  tl: /* [] */0
+                }
+              }
+            }
+          },
+          cEnv: /* [] */0
+        }
+      },
+      tl: /* [] */0
+    }, "process - lambda");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.$$process({
+          hd: {
+            TAG: /* Expression */1,
+            _0: {
+              TAG: /* LetE */8,
+              _0: {
+                letPairs: {
+                  hd: {
+                    pairName: /* Name */{
+                      _0: "x"
+                    },
+                    pairExpr: {
+                      TAG: /* NumE */0,
+                      _0: 10
+                    }
+                  },
+                  tl: {
+                    hd: {
+                      pairName: /* Name */{
+                        _0: "y"
+                      },
+                      pairExpr: {
+                        TAG: /* NumE */0,
+                        _0: 2
+                      }
+                    },
+                    tl: /* [] */0
+                  }
+                },
+                letBody: {
+                  TAG: /* ApplicationE */9,
+                  _0: {
+                    hd: {
+                      TAG: /* NameE */2,
+                      _0: /* Name */{
+                        _0: "*"
+                      }
+                    },
+                    tl: {
+                      hd: {
+                        TAG: /* NameE */2,
+                        _0: /* Name */{
+                          _0: "x"
+                        }
+                      },
+                      tl: {
+                        hd: {
+                          TAG: /* NameE */2,
+                          _0: /* Name */{
+                            _0: "y"
+                          }
+                        },
+                        tl: /* [] */0
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          tl: /* [] */0
+        }), {
+      hd: {
+        TAG: /* NumV */0,
+        _0: 20
+      },
+      tl: /* [] */0
+    }, "process - let");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.stringOfValue({
+          TAG: /* NumV */0,
+          _0: 4
+        }), "4", "stringOfValue - single number");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.stringOfValue({
+          TAG: /* BoolV */1,
+          _0: true
+        }), "#t", "stringOfValue - true");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.stringOfValue({
+          TAG: /* BoolV */1,
+          _0: false
+        }), "#f", "stringOfValue - false");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.stringOfValue({
+          TAG: /* ListV */2,
+          _0: {
+            hd: {
+              TAG: /* NumV */0,
+              _0: 1
+            },
+            tl: {
+              hd: {
+                TAG: /* NumV */0,
+                _0: 2
+              },
+              tl: {
+                hd: {
+                  TAG: /* NumV */0,
+                  _0: 3
+                },
+                tl: /* [] */0
+              }
+            }
+          }
+        }), "[1,2,3]", "stringOfValue - list");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.stringOfValue({
+          TAG: /* ListV */2,
+          _0: /* [] */0
+        }), "empty", "stringOfValue - empty list");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.stringOfValue({
+          TAG: /* BuiltinV */3,
+          _0: {
+            printedRep: "myPrint",
+            bProc: (function (_thisIsAPlaceholder) {
+                return {
+                        TAG: /* BoolV */1,
+                        _0: true
+                      };
+              })
+          }
+        }), "myPrint", "StringOfValue - builtIn");
 
 /*  Not a pure module */
