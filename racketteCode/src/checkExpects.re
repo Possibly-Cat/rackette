@@ -436,68 +436,63 @@ checkExpect(
 );
 
 checkExpectConcreteProgramPiece(
-    read("(addOne 5)"),
-    ListC([SymbolC("addOne"), NumberC(5)]),
-    "read - procedure application expression"
-)
+  read("(addOne 5)"),
+  ListC([SymbolC("addOne"), NumberC(5)]),
+  "read - procedure application expression",
+);
 checkExpectExpression(
-    parseExpression(ListC([SymbolC("lambda"), ListC([SymbolC("x")]), ListC([SymbolC("+"), SymbolC("x"), NumberC(1)])])),
-    LambdaE({nameList: [Name("x")], lambdaBody: ApplicationE([NameE(Name("+")), NameE(Name("x")), NumE(1)])}),
-    "lambda again"
-)
+  parseExpression(
+    ListC([
+      SymbolC("lambda"),
+      ListC([SymbolC("x")]),
+      ListC([SymbolC("+"), SymbolC("x"), NumberC(1)]),
+    ]),
+  ),
+  LambdaE({
+    nameList: [Name("x")],
+    lambdaBody:
+      ApplicationE([NameE(Name("+")), NameE(Name("x")), NumE(1)]),
+  }),
+  "lambda again",
+);
 checkExpectDefinition(
-    parseDefinition(read("(define addOne (lambda (x) (+ x 1)))")),
-    (Name("addOne"), parseExpression(read("(lambda (x) (+ x 1))"))),
-    "definition"
-)
+  parseDefinition(read("(define addOne (lambda (x) (+ x 1)))")),
+  (Name("addOne"), parseExpression(read("(lambda (x) (+ x 1))"))),
+  "definition",
+);
 
+checkExpect(rackette("(define f 4)"), [], "rackette - definition");
 checkExpect(
-    rackette(
-        "(define f 4)"),
-        [],
-        "rackette - definition"
-)
-checkExpect(
-    rackette(
-        "(define f 4)
+  rackette("(define f 4)
          (define g 6)
-         (+ f g)"
-    ),
-    ["10"],
-    "rackette - definitionz and builtin"
-)
+         (+ f g)"),
+  ["10"],
+  "rackette - definitionz and builtin",
+);
 checkExpect(
-    rackette(
-        "(lambda (f) (+ f 4))"
-    ),
-    ["#<procedure>"],
-    "rackette - lambda"
-)
+  rackette("(lambda (f) (+ f 4))"),
+  ["#<procedure>"],
+  "rackette - lambda",
+);
 checkExpect(
-    rackette(
-        "(define f (lambda (x) (+ x 4)))"
-    ),
-    [],
-    "racette - defing something as lambda"
-)
+  rackette("(define f (lambda (x) (+ x 4)))"),
+  [],
+  "racette - defing something as lambda",
+);
 checkExpect(
-    rackette(
-        "(define f (lambda (x) (+ x 4)))
-        (f (+ (f 5) 2))"
-    ),
-    ["15"],
-    "racette - user defined function"
-)
+  rackette("(define f (lambda (x) (+ x 4)))
+        (f (+ (f 5) 2))"),
+  ["15"],
+  "racette - user defined function",
+);
 checkExpect(
-    rackette(
-        "(cons 2 (cons 3 (cons 4 empty)))"
-    ),
-    ["[2,3,4]"],
-    "rackette - constructing a list"
-)
+  rackette("(cons 2 (cons 3 (cons 4 empty)))"),
+  ["[2,3,4]"],
+  "rackette - constructing a list",
+);
 checkExpect(
-    rackette(
-        "(define k-subsets-sum (lambda (weights k target)
+  rackette(
+    "(define k-subsets-sum (lambda (weights k target)
   (cond
     ((and (= k 0) (= target 0)) true)
     ((and (= k 0) (not (= target 0))) false)
@@ -507,26 +502,48 @@ checkExpect(
          (k-subsets-sum (rest weights) k target))))))
     (k-subsets-sum (cons 1 (cons 2 (cons 3 (cons 4 empty)))) 3 9)
     (k-subsets-sum empty 0 1)
-    (k-subsets-sum (cons 1 (cons 2 (cons 3 empty))) 2 6)"
-    ),
-    ["#t","#f","#f"],
-    "rackette - k-subsets-sum"
-)
+    (k-subsets-sum (cons 1 (cons 2 (cons 3 empty))) 2 6)",
+  ),
+  ["#t", "#f", "#f"],
+  "rackette - k-subsets-sum",
+);
+checkError(() => rackette("(cons 3)"), "too few arguments for cons");
+checkError(() => rackette("(+ 1)"), "too few arguments for add");
+checkError(() => rackette("(cond true 4)"), "Invalid cond clause format");
+checkError(() => rackette("(cons (+ 3 4) empty))"), "vacuous expression");
+checkError(() => rackette("(define x)"), "Invalid definition format");
 checkError(
-    () => rackette(
-        "(cons 3)"
-    ),
-    "too few arguments for cons"
-)
+  () => rackette("(cond
+        ((+ 3 2) 8)"),
+  "wrong number of parentheses",
+);
 checkError(
-    () => rackette(
-        "(+ 1)"
-    ),
-    "too few arguments for add"
-)
+  () => rackette("(cond
+        ((+ 3 2) 8))"),
+  "non-bool as condition in a cond statement",
+);
 checkError(
-    () => rackette(
-        "(cond true 4)"
-    ),
-    "Invalid cond clause format"
-)
+  () => rackette("(cond
+         (false 19)
+         ((<= 9 4) 19))"),
+  "no conditions evaluated to true in a cond statement",
+);
+checkError(
+  () => rackette("(and (> 5 4) (+ 3 4))"),
+  "non booleans in an and statement",
+);
+checkError(
+  () => rackette("(or (> 4 5) (+ 3 4))"),
+  "non booleans in an or statement",
+);
+checkError(
+  () => rackette("(if (+ 5 4) (> 3 4) (/ 6 3))"),
+  "non booleans as first argument in an if statement",
+);
+checkError(() => rackette("(5 4)"), "Tried to apply non-function");
+checkError(() => rackette("()"), "Syntax error");
+checkError(
+  () => rackette("(define foo (lambda (a b) 13))
+        (foo 1 2 3 4)"),
+  "Wrong number of arguments to function",
+);

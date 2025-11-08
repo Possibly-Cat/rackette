@@ -2011,4 +2011,48 @@ CS17SetupRackette$Rackette.checkError((function (param) {
         return Rackette$Rackette.rackette("(cond true 4)");
       }), "Invalid cond clause format");
 
+CS17SetupRackette$Rackette.checkError((function (param) {
+        return Rackette$Rackette.rackette("(cons (+ 3 4) empty))");
+      }), "vacuous expression");
+
+CS17SetupRackette$Rackette.checkError((function (param) {
+        return Rackette$Rackette.rackette("(define x)");
+      }), "Invalid definition format");
+
+CS17SetupRackette$Rackette.checkError((function (param) {
+        return Rackette$Rackette.rackette("(cond\n        ((+ 3 2) 8)");
+      }), "wrong number of parentheses");
+
+CS17SetupRackette$Rackette.checkError((function (param) {
+        return Rackette$Rackette.rackette("(cond\n        ((+ 3 2) 8))");
+      }), "non-bool as condition in a cond statement");
+
+CS17SetupRackette$Rackette.checkError((function (param) {
+        return Rackette$Rackette.rackette("(cond\n         (false 19)\n         ((<= 9 4) 19))");
+      }), "no conditions evaluated to true in a cond statement");
+
+CS17SetupRackette$Rackette.checkError((function (param) {
+        return Rackette$Rackette.rackette("(and (> 5 4) (+ 3 4))");
+      }), "non booleans in an and statement");
+
+CS17SetupRackette$Rackette.checkError((function (param) {
+        return Rackette$Rackette.rackette("(or (> 4 5) (+ 3 4))");
+      }), "non booleans in an or statement");
+
+CS17SetupRackette$Rackette.checkError((function (param) {
+        return Rackette$Rackette.rackette("(if (+ 5 4) (> 3 4) (/ 6 3))");
+      }), "non booleans as first argument in an if statement");
+
+CS17SetupRackette$Rackette.checkError((function (param) {
+        return Rackette$Rackette.rackette("(5 4)");
+      }), "Tried to apply non-function");
+
+CS17SetupRackette$Rackette.checkError((function (param) {
+        return Rackette$Rackette.rackette("()");
+      }), "Syntax error");
+
+CS17SetupRackette$Rackette.checkError((function (param) {
+        return Rackette$Rackette.rackette("(define foo (lambda (a b) 13))\n        (foo 1 2 3 4)");
+      }), "Wrong number of arguments to function");
+
 /*  Not a pure module */

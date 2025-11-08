@@ -526,13 +526,11 @@ and eval: (environment, environment, expression) => value =
      basically lookup looks for a name in the environment by first checking the local environment then the top-level environment
      */
     let rec lookup: (environment, environment, name) => value =
-      (tle, env, targetName) => 
+      (tle, env, targetName) =>
         switch (env) {
         | [] =>
           switch (tle) {
-          | [] => failwith(switch(targetName){
-            | Name(myName) => failwith(myName)
-            })
+          | [] => failwith("Unbound name")
           | [bindingList, ...tleTail] =>
             switch (
               List.find_opt(((name, _)) => name == targetName, bindingList)
