@@ -1857,4 +1857,140 @@ CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.stringOfValue({
           }
         }), "myPrint", "StringOfValue - builtIn");
 
+CS17SetupRackette$Rackette.checkExpectConcreteProgramPiece(Read$Rackette.Reader.read("(addOne 5)"), {
+      TAG: /* ListC */2,
+      _0: {
+        hd: {
+          TAG: /* SymbolC */1,
+          _0: "addOne"
+        },
+        tl: {
+          hd: {
+            TAG: /* NumberC */0,
+            _0: 5
+          },
+          tl: /* [] */0
+        }
+      }
+    }, "read - procedure application expression");
+
+CS17SetupRackette$Rackette.checkExpectExpression(Rackette$Rackette.parseExpression({
+          TAG: /* ListC */2,
+          _0: {
+            hd: {
+              TAG: /* SymbolC */1,
+              _0: "lambda"
+            },
+            tl: {
+              hd: {
+                TAG: /* ListC */2,
+                _0: {
+                  hd: {
+                    TAG: /* SymbolC */1,
+                    _0: "x"
+                  },
+                  tl: /* [] */0
+                }
+              },
+              tl: {
+                hd: {
+                  TAG: /* ListC */2,
+                  _0: {
+                    hd: {
+                      TAG: /* SymbolC */1,
+                      _0: "+"
+                    },
+                    tl: {
+                      hd: {
+                        TAG: /* SymbolC */1,
+                        _0: "x"
+                      },
+                      tl: {
+                        hd: {
+                          TAG: /* NumberC */0,
+                          _0: 1
+                        },
+                        tl: /* [] */0
+                      }
+                    }
+                  }
+                },
+                tl: /* [] */0
+              }
+            }
+          }
+        }), {
+      TAG: /* LambdaE */7,
+      _0: {
+        nameList: {
+          hd: /* Name */{
+            _0: "x"
+          },
+          tl: /* [] */0
+        },
+        lambdaBody: {
+          TAG: /* ApplicationE */9,
+          _0: {
+            hd: {
+              TAG: /* NameE */2,
+              _0: /* Name */{
+                _0: "+"
+              }
+            },
+            tl: {
+              hd: {
+                TAG: /* NameE */2,
+                _0: /* Name */{
+                  _0: "x"
+                }
+              },
+              tl: {
+                hd: {
+                  TAG: /* NumE */0,
+                  _0: 1
+                },
+                tl: /* [] */0
+              }
+            }
+          }
+        }
+      }
+    }, "lambda again");
+
+CS17SetupRackette$Rackette.checkExpectDefinition(Rackette$Rackette.parseDefinition(Read$Rackette.Reader.read("(define addOne (lambda (x) (+ x 1)))")), [
+      /* Name */{
+        _0: "addOne"
+      },
+      Rackette$Rackette.parseExpression(Read$Rackette.Reader.read("(lambda (x) (+ x 1))"))
+    ], "definition");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.rackette("(define f 4)"), /* [] */0, "rackette - definition");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.rackette("(define f 4)\n         (define g 6)\n         (+ f g)"), {
+      hd: "10",
+      tl: /* [] */0
+    }, "rackette - definitionz and builtin");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.rackette("(lambda (f) (+ f 4))"), {
+      hd: "#<procedure>",
+      tl: /* [] */0
+    }, "rackette - lambda");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.rackette("(define f (lambda (x) (+ x 4)))"), /* [] */0, "racette - defing something as lambda");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.rackette("(define f (lambda (x) (+ x 4)))\n        (f (+ 5 2))"), {
+      hd: "11",
+      tl: /* [] */0
+    }, "racette - user defined function");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.rackette("(cons 2 (cons 3 (cons 4 empty)))"), {
+      hd: "[2,3,4]",
+      tl: /* [] */0
+    }, "rackette - constructing a list");
+
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.rackette("(define k-subsets-sum (lambda (weights k target)\n  (cond\n    ((and (= k 0) (= target 0)) true)\n    ((and (= k 0) (not (= target 0))) false)\n    ((and (empty? weights) (or (not (= target 0)) (not ( = k 0)))) false)\n    ((and (cons? weights) (= target 0) (= k 0)) true)\n    ((and (cons? weights) (not (= k 0)))\n     (or (k-subsets-sum (rest weights) (- k 1) (- target (first weights)))\n         (k-subsets-sum (rest weights) k target))))))\n    (k-subsets-sum (cons 2 (cons 3 (cons 4 empty))) 3 7)"), {
+      hd: "#f",
+      tl: /* [] */0
+    }, "rackette - k-subsets-sum");
+
 /*  Not a pure module */

@@ -434,3 +434,80 @@ checkExpect(
   "myPrint",
   "StringOfValue - builtIn",
 );
+
+checkExpectConcreteProgramPiece(
+    read("(addOne 5)"),
+    ListC([SymbolC("addOne"), NumberC(5)]),
+    "read - procedure application expression"
+)
+checkExpectExpression(
+    parseExpression(ListC([SymbolC("lambda"), ListC([SymbolC("x")]), ListC([SymbolC("+"), SymbolC("x"), NumberC(1)])])),
+    LambdaE({nameList: [Name("x")], lambdaBody: ApplicationE([NameE(Name("+")), NameE(Name("x")), NumE(1)])}),
+    "lambda again"
+)
+checkExpectDefinition(
+    parseDefinition(read("(define addOne (lambda (x) (+ x 1)))")),
+    (Name("addOne"), parseExpression(read("(lambda (x) (+ x 1))"))),
+    "definition"
+)
+
+checkExpect(
+    rackette(
+        "(define f 4)"),
+        [],
+        "rackette - definition"
+)
+checkExpect(
+    rackette(
+        "(define f 4)
+         (define g 6)
+         (+ f g)"
+    ),
+    ["10"],
+    "rackette - definitionz and builtin"
+)
+checkExpect(
+    rackette(
+        "(lambda (f) (+ f 4))"
+    ),
+    ["#<procedure>"],
+    "rackette - lambda"
+)
+checkExpect(
+    rackette(
+        "(define f (lambda (x) (+ x 4)))"
+    ),
+    [],
+    "racette - defing something as lambda"
+)
+checkExpect(
+    rackette(
+        "(define f (lambda (x) (+ x 4)))
+        (f (+ 5 2))"
+    ),
+    ["11"],
+    "racette - user defined function"
+)
+checkExpect(
+    rackette(
+        "(cons 2 (cons 3 (cons 4 empty)))"
+    ),
+    ["[2,3,4]"],
+    "rackette - constructing a list"
+)
+checkExpect(
+    rackette(
+        "(define k-subsets-sum (lambda (weights k target)
+  (cond
+    ((and (= k 0) (= target 0)) true)
+    ((and (= k 0) (not (= target 0))) false)
+    ((and (empty? weights) (or (not (= target 0)) (not ( = k 0)))) false)
+    ((and (cons? weights) (= target 0) (= k 0)) true)
+    ((and (cons? weights) (not (= k 0)))
+     (or (k-subsets-sum (rest weights) (- k 1) (- target (first weights)))
+         (k-subsets-sum (rest weights) k target))))))
+    (k-subsets-sum (cons 2 (cons 3 (cons 4 empty))) 3 7)"
+    ),
+    ["#f"],
+    "rackette - k-subsets-sum"
+)
