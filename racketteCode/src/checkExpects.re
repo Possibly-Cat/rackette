@@ -483,9 +483,9 @@ checkExpect(
 checkExpect(
     rackette(
         "(define f (lambda (x) (+ x 4)))
-        (f (+ 5 2))"
+        (f (+ (f 5) 2))"
     ),
-    ["11"],
+    ["15"],
     "racette - user defined function"
 )
 checkExpect(
@@ -501,13 +501,32 @@ checkExpect(
   (cond
     ((and (= k 0) (= target 0)) true)
     ((and (= k 0) (not (= target 0))) false)
-    ((and (empty? weights) (or (not (= target 0)) (not ( = k 0)))) false)
-    ((and (cons? weights) (= target 0) (= k 0)) true)
+    ((and (empty? weights) (or (not (= target 0)) (not (= k 0)))) false)
     ((and (cons? weights) (not (= k 0)))
      (or (k-subsets-sum (rest weights) (- k 1) (- target (first weights)))
          (k-subsets-sum (rest weights) k target))))))
-    (k-subsets-sum (cons 2 (cons 3 (cons 4 empty))) 3 7)"
+    (k-subsets-sum (cons 1 (cons 2 (cons 3 (cons 4 empty)))) 3 9)
+    (k-subsets-sum empty 0 1)
+    (k-subsets-sum (cons 1 (cons 2 (cons 3 empty))) 2 6)"
     ),
-    ["#f"],
+    ["#t","#f","#f"],
     "rackette - k-subsets-sum"
+)
+checkError(
+    () => rackette(
+        "(cons 3)"
+    ),
+    "too few arguments for cons"
+)
+checkError(
+    () => rackette(
+        "(+ 1)"
+    ),
+    "too few arguments for add"
+)
+checkError(
+    () => rackette(
+        "(cond true 4)"
+    ),
+    "Invalid cond clause format"
 )

@@ -1978,8 +1978,8 @@ CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.rackette("(lambda (f) (
 
 CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.rackette("(define f (lambda (x) (+ x 4)))"), /* [] */0, "racette - defing something as lambda");
 
-CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.rackette("(define f (lambda (x) (+ x 4)))\n        (f (+ 5 2))"), {
-      hd: "11",
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.rackette("(define f (lambda (x) (+ x 4)))\n        (f (+ (f 5) 2))"), {
+      hd: "15",
       tl: /* [] */0
     }, "racette - user defined function");
 
@@ -1988,9 +1988,27 @@ CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.rackette("(cons 2 (cons
       tl: /* [] */0
     }, "rackette - constructing a list");
 
-CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.rackette("(define k-subsets-sum (lambda (weights k target)\n  (cond\n    ((and (= k 0) (= target 0)) true)\n    ((and (= k 0) (not (= target 0))) false)\n    ((and (empty? weights) (or (not (= target 0)) (not ( = k 0)))) false)\n    ((and (cons? weights) (= target 0) (= k 0)) true)\n    ((and (cons? weights) (not (= k 0)))\n     (or (k-subsets-sum (rest weights) (- k 1) (- target (first weights)))\n         (k-subsets-sum (rest weights) k target))))))\n    (k-subsets-sum (cons 2 (cons 3 (cons 4 empty))) 3 7)"), {
-      hd: "#f",
-      tl: /* [] */0
+CS17SetupRackette$Rackette.checkExpect(Rackette$Rackette.rackette("(define k-subsets-sum (lambda (weights k target)\n  (cond\n    ((and (= k 0) (= target 0)) true)\n    ((and (= k 0) (not (= target 0))) false)\n    ((and (empty? weights) (or (not (= target 0)) (not (= k 0)))) false)\n    ((and (cons? weights) (not (= k 0)))\n     (or (k-subsets-sum (rest weights) (- k 1) (- target (first weights)))\n         (k-subsets-sum (rest weights) k target))))))\n    (k-subsets-sum (cons 1 (cons 2 (cons 3 (cons 4 empty)))) 3 9)\n    (k-subsets-sum empty 0 1)\n    (k-subsets-sum (cons 1 (cons 2 (cons 3 empty))) 2 6)"), {
+      hd: "#t",
+      tl: {
+        hd: "#f",
+        tl: {
+          hd: "#f",
+          tl: /* [] */0
+        }
+      }
     }, "rackette - k-subsets-sum");
+
+CS17SetupRackette$Rackette.checkError((function (param) {
+        return Rackette$Rackette.rackette("(cons 3)");
+      }), "too few arguments for cons");
+
+CS17SetupRackette$Rackette.checkError((function (param) {
+        return Rackette$Rackette.rackette("(+ 1)");
+      }), "too few arguments for add");
+
+CS17SetupRackette$Rackette.checkError((function (param) {
+        return Rackette$Rackette.rackette("(cond true 4)");
+      }), "Invalid cond clause format");
 
 /*  Not a pure module */
